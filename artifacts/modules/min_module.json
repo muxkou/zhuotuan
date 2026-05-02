@@ -1,0 +1,59 @@
+{
+  "id": "module_rainy_house_v1",
+  "version": "v1",
+  "created_at": "2026-05-02T16:26:29.686042Z",
+  "source": "system",
+  "world_id": "world_tanxi_records_v1",
+  "name": "雨夜檀宅",
+  "player_count_min": 2,
+  "player_count_max": 4,
+  "duration_minutes": 120,
+  "opening_hook": "一名学生在暴雨夜失踪，留下一封提到檀宅后井的信。",
+  "core_secret": "二十年前一场失败祭祀导致受害者怨念寄于后井，族老一直在掩盖真相。",
+  "major_conflict": "玩家必须在暴雨与族老的阻挠下查明真相，阻止再一次献祭。",
+  "required_npcs": [
+    "npc_tan_mingyuan",
+    "npc_lin_qinghe",
+    "npc_old_doctor"
+  ],
+  "key_locations": [
+    "loc_main_hall",
+    "loc_back_well",
+    "loc_archive_room",
+    "loc_white_temple"
+  ],
+  "key_clues": [
+    {
+      "clue_id": "clue_letter",
+      "target_secret_id": "secret_ritual",
+      "location_id": "loc_main_hall",
+      "fallback_clue_ids": []
+    },
+    {
+      "clue_id": "clue_genealogy_gap",
+      "target_secret_id": "secret_ritual",
+      "location_id": "loc_main_hall",
+      "fallback_clue_ids": [
+        "clue_doctor_testimony"
+      ]
+    },
+    {
+      "clue_id": "clue_ritual_text",
+      "target_secret_id": "secret_ritual",
+      "location_id": "loc_white_temple",
+      "fallback_clue_ids": []
+    }
+  ],
+  "threat_clock_id": "clock_rain_ritual",
+  "endings": {
+    "good": "揭露真相并阻止再次献祭。",
+    "partial": "救下关键角色，但真相未能完全公开。",
+    "bad": "封井仪式完成，真相再次被掩盖。"
+  },
+  "ai_do_not_change": [
+    "核心秘密不可改写",
+    "族老不是无辜者",
+    "关键线索不可删除"
+  ],
+  "ai_freedom_level": "standard"
+}

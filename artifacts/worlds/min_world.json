@@ -1,0 +1,47 @@
+{
+  "id": "world_tanxi_records_v1",
+  "version": "v1",
+  "created_at": "2026-05-02T16:26:29.686033Z",
+  "source": "system",
+  "name": "檀溪异闻录",
+  "tagline": "一个被水雾、旧宅、宗族和失踪传闻笼罩的江南古镇世界。",
+  "genre": "中式怪谈调查",
+  "era": "架空近现代",
+  "tone": [
+    "潮湿",
+    "阴郁",
+    "民俗悬疑"
+  ],
+  "public_rules": [
+    "异常真实存在，但通常不会以直白方式出现。",
+    "普通人会用风水、疯病、祖坟来解释异常。"
+  ],
+  "hidden_rules": [
+    "异常往往与未竟仪式、旧案和家族禁忌有关。"
+  ],
+  "factions": [
+    "檀溪宗族",
+    "镇公所",
+    "白衣庙"
+  ],
+  "common_locations": [
+    "老宅",
+    "祠堂",
+    "码头",
+    "档案室"
+  ],
+  "taboos": [
+    "不可在暴雨夜独自靠近后井。"
+  ],
+  "recommended_roles": [
+    "记者",
+    "巡警",
+    "医生",
+    "民俗研究者"
+  ],
+  "narration_style": {
+    "horror_level": 2,
+    "dialogue_style": "克制",
+    "pacing": "steady"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "id": "ruleset_light_cntrpg_v1",
+  "version": "v1",
+  "created_at": "2026-05-02T16:26:29.685771Z",
+  "source": "system",
+  "name": "原创轻规则",
+  "description": "阶段一短团使用的基础轻规则。",
+  "dice_formula": "2d6",
+  "difficulty_bands": {
+    "easy": 7,
+    "standard": 9,
+    "hard": 11
+  },
+  "attributes": [
+    "physique",
+    "agility",
+    "mind",
+    "willpower",
+    "social"
+  ],
+  "skills": [
+    "investigation",
+    "negotiation",
+    "stealth",
+    "combat",
+    "medicine",
+    "occult",
+    "craft",
+    "survival"
+  ],
+  "resource_rules": {
+    "hp": 8,
+    "mp": 8,
+    "stress": 0,
+    "fate_points": 1
+  }
+}

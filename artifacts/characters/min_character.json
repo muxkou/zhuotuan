@@ -1,0 +1,55 @@
+{
+  "id": "char_chenyan_v1",
+  "version": "v1",
+  "created_at": "2026-05-02T16:26:29.686060Z",
+  "source": "system",
+  "name": "陈砚",
+  "identity": "外地记者",
+  "concept": "为了调查妹妹旧案来到檀溪镇的年轻记者。",
+  "personality_tags": [
+    "冷静",
+    "执拗",
+    "不轻信权威"
+  ],
+  "module_motivation": "失踪学生寄来的信提到了妹妹当年也出现过的地点，我必须查清楚。",
+  "attributes": {
+    "physique": 0,
+    "agility": 1,
+    "mind": 2,
+    "willpower": 1,
+    "social": 0
+  },
+  "skills": {
+    "investigation": 2,
+    "negotiation": 1,
+    "stealth": 0,
+    "combat": 0,
+    "medicine": 0,
+    "occult": 1,
+    "craft": 0,
+    "survival": 0
+  },
+  "strengths": [
+    "善于从细节中发现矛盾。"
+  ],
+  "weaknesses": [
+    "一旦涉及妹妹就会失去冷静。"
+  ],
+  "fears": [
+    "害怕发现妹妹早已死去。"
+  ],
+  "secret": "我其实怀疑妹妹的案子和檀溪宗族有关。",
+  "relationships": [
+    {
+      "target": "npc_lin_qinghe",
+      "type": "共情",
+      "note": "都失去了重要亲人"
+    }
+  ],
+  "inventory": [
+    "记者证",
+    "旧相机",
+    "钢笔",
+    "失踪学生来信"
+  ]
+}
