@@ -1,0 +1,11 @@
+{
+  "case_id": "quickstart_clocktower",
+  "genre": "都市悬疑",
+  "duration_minutes": 75,
+  "player_count": 2,
+  "tone": ["冷白", "精密", "焦虑"],
+  "inspiration": "废弃钟楼、失踪孩童、倒走的时针",
+  "horror_level": "low",
+  "combat_ratio": "low",
+  "investigation_ratio": "high"
+}

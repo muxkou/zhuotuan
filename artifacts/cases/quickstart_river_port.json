@@ -1,0 +1,11 @@
+{
+  "case_id": "quickstart_river_port",
+  "genre": "架空民国异闻",
+  "duration_minutes": 95,
+  "player_count": 3,
+  "tone": ["潮气", "灰暗", "传闻"],
+  "inspiration": "水路码头、走私、河神传闻、夜半尸体",
+  "horror_level": "medium",
+  "combat_ratio": "low",
+  "investigation_ratio": "high"
+}

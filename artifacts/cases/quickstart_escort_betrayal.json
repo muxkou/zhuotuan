@@ -1,0 +1,11 @@
+{
+  "case_id": "quickstart_escort_betrayal",
+  "genre": "武侠悬疑",
+  "duration_minutes": 120,
+  "player_count": 4,
+  "tone": ["江湖", "克制", "紧张"],
+  "inspiration": "镖局、内鬼、夜路、失落的货物",
+  "horror_level": "low",
+  "combat_ratio": "medium",
+  "investigation_ratio": "medium"
+}

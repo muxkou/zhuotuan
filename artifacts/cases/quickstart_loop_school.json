@@ -1,0 +1,11 @@
+{
+  "case_id": "quickstart_loop_school",
+  "genre": "无限流校园",
+  "duration_minutes": 100,
+  "player_count": 4,
+  "tone": ["压迫", "循环", "不安"],
+  "inspiration": "旧教学楼、重复晚自习、失踪学生",
+  "horror_level": "high",
+  "combat_ratio": "low",
+  "investigation_ratio": "high"
+}

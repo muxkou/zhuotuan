@@ -1,0 +1,61 @@
+{
+  "id": "module_rainy_town_001",
+  "version": "1.0",
+  "created_at": "2026-05-03T02:16:38.266176Z",
+  "source": "llm",
+  "world_id": "rainy_town_world",
+  "name": "雨镇异闻录·暴雨迷踪",
+  "player_count_min": 3,
+  "player_count_max": 3,
+  "duration_minutes": 90,
+  "opening_hook": "连续四十九日的暴雨将柳家老宅的院墙泡烂，镇上第三起失踪案——茶楼掌柜的女儿阿秀——最后出现的地点正是老宅门前。镇长委托你们这些外乡人调查此事，承诺事成之后提供出镇的船票。",
+  "core_secret": "柳家老宅地下封印着‘雨魃’，它是因镇上先民屠杀水族而诞生的怨灵，暴雨是其愤怒的具现。老宅地窖碑文上刻有雨魃的真名，念出名字会引来本体。封印需要特定仪式加固或超度。",
+  "major_conflict": "玩家必须在调查过程中逐渐发现真相，但每解开一个关键线索，封印就会松动一层。最终玩家需要做出选择：是帮助镇公所重新加固封印（保持现状，但怨灵仍在），还是超度雨魃（需要找到真名并完成超度仪式，但可能引发冲突）；同时，部分NPC（水族后裔）希望释放雨魃复仇，会制造障碍。主要冲突是调查真相与时间赛跑（湿气值升高导致灵异事件），以及阵营选择。",
+  "required_npcs": [
+    "柳文渊",
+    "苏三娘",
+    "张玄清",
+    "黄伯"
+  ],
+  "key_locations": [
+    "柳家老宅",
+    "镇口茶楼",
+    "雨神庙",
+    "黄家祠堂",
+    "河埠码头"
+  ],
+  "key_clues": [
+    {
+      "clue_id": "clue_01",
+      "target_secret_id": "core_secret",
+      "location_id": null,
+      "fallback_clue_ids": []
+    },
+    {
+      "clue_id": "clue_02",
+      "target_secret_id": "core_secret",
+      "location_id": null,
+      "fallback_clue_ids": []
+    },
+    {
+      "clue_id": "clue_03",
+      "target_secret_id": "core_secret",
+      "location_id": null,
+      "fallback_clue_ids": []
+    }
+  ],
+  "threat_clock_id": "threat_clock_wetness",
+  "endings": {
+    "good": "玩家找到雨魃真名并完成超度仪式，暴雨停止，小镇恢复平静，水族后裔与人类达成和解。",
+    "partial": "玩家选择重新加固封印，暴雨减弱为绵绵细雨，但镇上仍偶发灵异事件，水族后裔心怀怨恨，小镇未来不确定。",
+    "bad": "玩家念出真名或行动失败，雨魃完全苏醒，洪水淹没小镇，所有生灵陷入绝望，玩家被困。"
+  },
+  "ai_do_not_change": [
+    "雨魃的真名写在老宅地窖碑文上，不可改变书写位置或内容。",
+    "封印每解开一个关键线索就会松动一层，顺序可调但效果固定。",
+    "镇上存在水族后裔（至少苏三娘），其身份不可被完全抹除。",
+    "最终结局必须从三个预设中选择，不可新增结局类型。",
+    "湿气值系统作为核心机制，不可删除，但具体数值可微调。"
+  ],
+  "ai_freedom_level": "standard"
+}

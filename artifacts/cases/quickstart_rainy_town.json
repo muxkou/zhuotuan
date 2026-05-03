@@ -1,0 +1,11 @@
+{
+  "case_id": "quickstart_rainy_town",
+  "genre": "中式怪谈调查",
+  "duration_minutes": 90,
+  "player_count": 3,
+  "tone": ["潮湿", "悬疑", "压抑"],
+  "inspiration": "江南古镇、旧宅、暴雨、失踪案",
+  "horror_level": "medium",
+  "combat_ratio": "low",
+  "investigation_ratio": "high"
+}

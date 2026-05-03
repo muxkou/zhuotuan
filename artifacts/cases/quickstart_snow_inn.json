@@ -1,0 +1,11 @@
+{
+  "case_id": "quickstart_snow_inn",
+  "genre": "武侠密室",
+  "duration_minutes": 105,
+  "player_count": 4,
+  "tone": ["寒冷", "封闭", "猜疑"],
+  "inspiration": "雪夜客栈、掌柜死亡、所有人都有嫌疑",
+  "horror_level": "low",
+  "combat_ratio": "medium",
+  "investigation_ratio": "high"
+}

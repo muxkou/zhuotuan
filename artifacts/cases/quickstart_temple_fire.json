@@ -1,0 +1,11 @@
+{
+  "case_id": "quickstart_temple_fire",
+  "genre": "中式怪谈调查",
+  "duration_minutes": 90,
+  "player_count": 3,
+  "tone": ["庄严", "余烬", "压抑"],
+  "inspiration": "古庙失火、未烧尽的壁画、复活的目击者",
+  "horror_level": "medium",
+  "combat_ratio": "low",
+  "investigation_ratio": "high"
+}

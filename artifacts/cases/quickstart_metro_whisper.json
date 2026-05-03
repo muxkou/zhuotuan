@@ -1,0 +1,11 @@
+{
+  "case_id": "quickstart_metro_whisper",
+  "genre": "都市异闻",
+  "duration_minutes": 80,
+  "player_count": 3,
+  "tone": ["冷清", "诡异", "现代"],
+  "inspiration": "深夜地铁、失踪乘客、重复广播",
+  "horror_level": "medium",
+  "combat_ratio": "low",
+  "investigation_ratio": "high"
+}

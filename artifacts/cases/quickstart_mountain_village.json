@@ -1,0 +1,11 @@
+{
+  "case_id": "quickstart_mountain_village",
+  "genre": "民俗怪谈",
+  "duration_minutes": 110,
+  "player_count": 4,
+  "tone": ["封闭", "潮湿", "民俗"],
+  "inspiration": "山村、迎神仪式、外来访客、禁忌祠堂",
+  "horror_level": "high",
+  "combat_ratio": "low",
+  "investigation_ratio": "high"
+}
