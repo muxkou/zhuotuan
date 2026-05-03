@@ -88,6 +88,37 @@ class RuleSetSchema(BaseModel):
 ### `WorldSchema`
 
 ```python
+class AttributeSemanticBand(BaseModel):
+    min_value: int
+    max_value: int
+    summary: str
+    examples: list[str] = []
+
+class AttributeDefinition(BaseModel):
+    key: str
+    label: str
+    description: str
+    min_value: int
+    max_value: int
+    semantic_bands: list[AttributeSemanticBand]
+    is_core: bool = True
+
+class SpecialStatusDefinition(BaseModel):
+    key: str
+    label: str
+    description: str
+    trigger_sources: list[str]
+    behavioral_constraints: list[str]
+    recovery_hints: list[str] = []
+
+class CharacterCreationProfile(BaseModel):
+    base_attributes: list[AttributeDefinition]
+    world_specific_attributes: list[AttributeDefinition] = []
+    total_attribute_budget_min: int
+    total_attribute_budget_max: int
+    identity_guidelines: list[str]
+    forbidden_character_elements: list[str] = []
+
 class WorldSchema(BaseModel):
     id: str
     version: str
@@ -103,6 +134,8 @@ class WorldSchema(BaseModel):
     taboos: list[str]
     recommended_roles: list[str]
     narration_style: dict[str, str | int]
+    character_creation_profile: CharacterCreationProfile
+    special_status_catalog: list[SpecialStatusDefinition] = []
 ```
 
 ### `ModuleBlueprintSchema`
@@ -155,6 +188,16 @@ class CharacterSheetSchema(BaseModel):
     inventory: list[str]
 ```
 
+说明：
+
+1. 角色卡中的 `attributes` 不再只是假定 5 维固定属性。
+2. 当前阶段实现允许仍以基础 5 维为默认参考，但世界必须显式提供这些属性定义和解释。
+3. 世界可以增加特殊属性，例如：
+   - `faith`
+   - `pollution_resistance`
+   - `spirit_sensitivity`
+4. 世界也可以不增加特殊属性，只使用基础属性集。
+
 ### `TurnRecordSchema`
 
 ```python
@@ -180,6 +223,10 @@ class TurnRecordSchema(BaseModel):
 
 ```python
 def validate_attributes(attrs: AttributeScore) -> list[ErrorItem]: ...
+def validate_attributes_against_world(
+    attrs: dict[str, int],
+    world_profile: CharacterCreationProfile,
+) -> list[ErrorItem]: ...
 def validate_skill_budget(skills: SkillBonus) -> list[ErrorItem]: ...
 def roll_2d6(seed: int | None = None) -> tuple[int, list[int]]: ...
 def compute_check_total(base_roll: int, attribute_mod: int, skill_mod: int) -> int: ...
@@ -220,6 +267,9 @@ uv run python scripts/phase1/validate_sample_assets.py \
 
 - schema 必填字段缺失时报错
 - 属性和技能越界时报错
+- 世界车卡属性定义缺失时报错
+- 属性语义区间不连续或互相重叠时报错
+- 特殊状态定义缺少行为约束时报错
 - 骰点函数结果范围正确
 
 ### integration
@@ -236,5 +286,5 @@ uv run python scripts/phase1/validate_sample_assets.py \
 
 1. 核心 schema 第一版字段冻结
 2. 所有样例 JSON 能通过 schema 校验
-3. 下游模块无需再补临时字段
+3. 世界内已包含可直接供车卡阶段使用的属性与特殊状态约束
 4. 单次全量 schema 校验 < 1s

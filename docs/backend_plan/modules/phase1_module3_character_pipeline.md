@@ -2,7 +2,7 @@
 
 ## 1. 模块目标
 
-验证“玩家问卷 -> 角色草案 -> 规则审核 -> 世界观审核 -> 模组适配审核”的完整链路。
+验证“玩家问卷 -> 角色草案 -> 规则审核 -> 世界车卡约束审核 -> 世界观审核 -> 模组适配审核 -> 房间顺序审核”的完整链路。
 
 ---
 
@@ -10,7 +10,9 @@
 
 ```text
 backend/app/application/services/character_generation_service.py
+backend/app/application/services/character_roster_review_service.py
 backend/app/application/validators/character_rules_validator.py
+backend/app/application/validators/character_world_profile_validator.py
 backend/app/application/validators/character_world_validator.py
 backend/app/application/validators/character_module_validator.py
 backend/app/prompts/character_generation.md
@@ -39,6 +41,8 @@ class CharacterQuestionnaire(BaseModel):
 - `WorldSchema`
 - `ModuleBlueprintSchema`
 - `RuleSetSchema`
+- `list[CharacterReviewReport]` 或 `list[CharacterSheetSchema]`
+  - 表示同一房间中已经审核通过的前序玩家角色
 
 ---
 
@@ -50,6 +54,8 @@ class CharacterReviewReport(ValidationReport):
     normalized_character: CharacterSheetSchema | None = None
     blocking_reasons: list[str] = []
     revision_suggestions: list[str] = []
+    queue_position: int | None = None
+    roster_conflicts: list[str] = []
 ```
 
 ---
@@ -73,14 +79,27 @@ class CharacterReviewPipeline:
         world: WorldSchema,
         module: ModuleBlueprintSchema,
         ruleset: RuleSetSchema,
+        existing_characters: list[CharacterSheetSchema] = [],
     ) -> CharacterReviewReport: ...
 ```
 
 审核顺序：
 
 1. 规则审核
-2. 世界观审核
-3. 模组适配审核
+2. 世界车卡约束审核
+3. 世界观审核
+4. 模组适配审核
+5. 房间顺序审核
+
+房间顺序审核要求：
+
+1. 同一房间内，角色审核必须串行执行，不能并行放行。
+2. 第 `N` 个角色审核时，要读取前 `N-1` 个已通过角色。
+3. 必须检查：
+   - 身份是否互斥
+   - 关系与秘密是否直接冲突
+   - 是否重复占用唯一叙事槽位
+   - 是否导致队伍合作前提断裂
 
 ---
 
@@ -88,8 +107,9 @@ class CharacterReviewPipeline:
 
 1. `scripts/phase1/generate_character_draft.py`
 2. `scripts/phase1/review_character_sheet.py`
-3. `scripts/eval/eval_character_review.py`
-4. `scripts/perf/perf_character_pipeline.py`
+3. `scripts/phase1/review_character_roster_queue.py`
+4. `scripts/eval/eval_character_review.py`
+5. `scripts/perf/perf_character_pipeline.py`
 
 示例：
 
@@ -111,16 +131,36 @@ uv run python scripts/phase1/review_character_sheet.py \
 - 技能点总额是否超限
 - 必填字段是否缺失
 
+### 世界车卡约束审核
+
+- 角色属性是否全部出自世界允许的属性定义
+- 每个属性是否落在该世界定义的取值范围内
+- 特殊属性是否被正确识别
+- 角色描述是否与世界给定的属性语义相匹配
+- 是否使用了世界禁止的车卡元素
+
+说明：
+
+1. 本版本技能不要求由世界或模组预定义。
+2. 但技能仍要做合理性审核，例如：
+   - 技能总量是否超限
+   - 是否过度集中导致失衡
+   - 是否出现明显不适合当前阶段的超模组合
+3. 技能合理性由角色审核逻辑负责，不进入 `WorldSchema.character_creation_profile`
+
 ### 世界观审核
 
 - 是否拥有不允许的强超自然能力
 - 是否明显违背世界常识
+- 是否无视世界特殊状态约束
 
 ### 模组适配审核
 
 - 是否提前知道核心秘密
 - 是否没有参与动机
 - 是否无法与其他玩家协作
+- 是否与已通过角色相互矛盾
+- 是否超出模组当前允许的玩家人数上限
 
 ---
 
@@ -128,6 +168,7 @@ uv run python scripts/phase1/review_character_sheet.py \
 
 - `artifacts/characters/<case_id>_draft.json`
 - `artifacts/characters/<case_id>_review.json`
+- `artifacts/characters/<case_id>_roster_review.json`
 - `artifacts/evals/character_batch_summary.json`
 
 ---
@@ -140,12 +181,15 @@ uv run python scripts/phase1/review_character_sheet.py \
 2. 剧透角色 5 个
 3. 超能力角色 5 个
 4. 无动机角色 5 个
+5. 互相矛盾角色 5 组
+6. 超出人数上限角色 5 组
 
 检查：
 
 1. 错误角色识别召回率
 2. 合理角色误杀率
 3. 修改建议可用性
+4. 顺序审核时冲突角色识别率
 
 ---
 
@@ -154,4 +198,5 @@ uv run python scripts/phase1/review_character_sheet.py \
 1. 角色草案可被统一 schema 接收
 2. 审核结果包含 `approved/needs_revision/warning/enhance`
 3. 错误角色识别召回率 >= 85%
-4. 单角色全链路 P95 < 8s
+4. 顺序审核时可稳定考虑前序角色上下文
+5. 单角色全链路 P95 < 8s

@@ -75,6 +75,9 @@ class ModulePlayabilityValidator:
 1. 先生成 world，再生成 module。
 2. 生成结果必须通过 schema 校验。
 3. `fail` 时允许一次 repair pass。
+4. 生成出的世界必须包含可供车卡阶段使用的 `character_creation_profile`。
+5. 生成出的世界必须给出 `special_status_catalog`，可以为空，但字段必须存在。
+6. 生成出的模组必须明确 `player_count_min` / `player_count_max`，供后续房间角色审核使用。
 
 ---
 
@@ -102,6 +105,11 @@ uv run python scripts/phase1/generate_world_draft.py \
 2. 字段名与 schema 对齐
 3. 不允许额外字段
 4. 核心秘密、线索、结局必须显式存在
+5. 世界内必须显式给出：
+   - 基础属性定义
+   - 属性取值范围
+   - 属性分段语义说明
+   - 特殊状态目录
 
 ---
 
@@ -125,6 +133,8 @@ uv run python scripts/phase1/generate_world_draft.py \
 3. 模组包含核心秘密
 4. 至少 3 条关键线索指向真相
 5. 至少有好 / 中 / 差三个结局层级
+6. 世界包含可消费的车卡规范
+7. 模组人数范围与快速开团输入人数兼容
 
 ---
 
@@ -133,4 +143,5 @@ uv run python scripts/phase1/generate_world_draft.py \
 1. 10 组输入里至少 9 组生成结构完整 world/module
 2. 至少 80% 模组满足“3 条关键线索指向真相”
 3. 校验器可输出 `pass/warn/fail`
-4. 单次完整链路 P95 < 12s
+4. 至少 90% 世界包含可被角色审核链路直接消费的 `character_creation_profile`
+5. 单次完整链路 P95 < 12s

@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from typing import Any
 
 
@@ -154,3 +155,194 @@ def normalize_module_payload(payload: dict[str, Any]) -> dict[str, Any]:
         normalized["threat_clock_id"] = f"{module_id}_threat_clock"
 
     return normalized
+
+
+def _coerce_int(value: Any, default: int = 0) -> int:
+    if isinstance(value, bool):
+        return int(value)
+    if isinstance(value, int):
+        return value
+    if isinstance(value, float):
+        return int(value)
+    if isinstance(value, str):
+        stripped = value.strip()
+        if stripped.lstrip("-").isdigit():
+            return int(stripped)
+    return default
+
+
+def _normalize_attribute_value(value: Any) -> int:
+    numeric = _coerce_int(value, 0)
+    if -2 <= numeric <= 3:
+        return numeric
+    if 0 <= numeric <= 10:
+        return max(-2, min(3, numeric - 5))
+    return max(-2, min(3, numeric))
+
+
+def _normalize_skill_value(value: Any) -> int:
+    numeric = _coerce_int(value, 0)
+    if 0 <= numeric <= 3:
+        return numeric
+    if 0 <= numeric <= 10:
+        return max(0, min(3, round(numeric / 3)))
+    return max(0, min(3, numeric))
+
+
+def _normalize_numeric_mapping(
+    value: Any,
+    *,
+    aliases: dict[str, str],
+    defaults: dict[str, int],
+    value_normalizer: Callable[[Any], int] | None = None,
+) -> dict[str, int]:
+    normalized = dict(defaults)
+    if isinstance(value, dict):
+        for key, raw_value in value.items():
+            mapped_key = aliases.get(str(key), str(key))
+            if mapped_key in normalized:
+                coerced = _coerce_int(raw_value, normalized[mapped_key])
+                normalized[mapped_key] = (
+                    value_normalizer(coerced) if value_normalizer is not None else coerced
+                )
+    return normalized
+
+
+def normalize_character_payload(payload: dict[str, Any]) -> dict[str, Any]:
+    if isinstance(payload.get("character"), dict):
+        normalized = dict(payload["character"])
+    else:
+        normalized = dict(payload)
+
+    list_fields = (
+        "personality_tags",
+        "strengths",
+        "weaknesses",
+        "fears",
+        "inventory",
+    )
+    for key in list_fields:
+        if key in normalized:
+            normalized[key] = _normalize_string_list(normalized[key])
+
+    if "module_motivation" not in normalized and "motivation" in normalized:
+        normalized["module_motivation"] = _stringify_item(normalized["motivation"])
+
+    attributes_aliases = {
+        "physique": "physique",
+        "体魄": "physique",
+        "strength": "physique",
+        "agility": "agility",
+        "敏捷": "agility",
+        "mind": "mind",
+        "心智": "mind",
+        "intelligence": "mind",
+        "willpower": "willpower",
+        "意志": "willpower",
+        "social": "social",
+        "社交": "social",
+        "charisma": "social",
+    }
+    skill_aliases = {
+        "investigation": "investigation",
+        "调查": "investigation",
+        "negotiation": "negotiation",
+        "交涉": "negotiation",
+        "stealth": "stealth",
+        "潜行": "stealth",
+        "combat": "combat",
+        "战斗": "combat",
+        "medicine": "medicine",
+        "医疗": "medicine",
+        "occult": "occult",
+        "神秘学": "occult",
+        "craft": "craft",
+        "技艺": "craft",
+        "survival": "survival",
+        "生存": "survival",
+    }
+    normalized["attributes"] = _normalize_numeric_mapping(
+        normalized.get("attributes"),
+        aliases=attributes_aliases,
+        defaults={
+            "physique": 0,
+            "agility": 0,
+            "mind": 0,
+            "willpower": 0,
+            "social": 0,
+        },
+        value_normalizer=_normalize_attribute_value,
+    )
+    normalized["skills"] = _normalize_numeric_mapping(
+        normalized.get("skills"),
+        aliases=skill_aliases,
+        defaults={
+            "investigation": 0,
+            "negotiation": 0,
+            "stealth": 0,
+            "combat": 0,
+            "medicine": 0,
+            "occult": 0,
+            "craft": 0,
+            "survival": 0,
+        },
+        value_normalizer=_normalize_skill_value,
+    )
+
+    relationships = normalized.get("relationships")
+    if isinstance(relationships, list):
+        normalized_relationships: list[dict[str, str]] = []
+        for item in relationships:
+            if isinstance(item, dict):
+                relation: dict[str, str] = {}
+                for key, value in item.items():
+                    relation[str(key)] = _stringify_item(value)
+                normalized_relationships.append(relation)
+            else:
+                normalized_relationships.append(
+                    {
+                        "target": "group",
+                        "type": "默认关系",
+                        "note": _stringify_item(item),
+                    }
+                )
+        normalized["relationships"] = normalized_relationships
+    elif isinstance(relationships, str):
+        normalized["relationships"] = [
+            {
+                "target": "group",
+                "type": "默认关系",
+                "note": part,
+            }
+            for part in _normalize_string_list(relationships)
+        ]
+    else:
+        normalized.setdefault("relationships", [])
+
+    if "concept" not in normalized and "description" in normalized:
+        normalized["concept"] = _stringify_item(normalized["description"])
+
+    allowed_fields = {
+        "id",
+        "version",
+        "created_at",
+        "source",
+        "name",
+        "identity",
+        "concept",
+        "personality_tags",
+        "module_motivation",
+        "attributes",
+        "skills",
+        "strengths",
+        "weaknesses",
+        "fears",
+        "secret",
+        "relationships",
+        "inventory",
+    }
+    return {
+        key: value
+        for key, value in normalized.items()
+        if key in allowed_fields
+    }

@@ -5,13 +5,17 @@ from datetime import UTC, datetime
 from pathlib import Path
 from time import perf_counter
 
+from backend.app.application.services.character_review_pipeline import (
+    CharacterReviewPipeline,
+)
 from backend.app.application.services.module_generation_pipeline import (
     ModuleGenerationPipeline,
 )
 from backend.app.application.services.world_generation_service import (
     WorldGenerationService,
 )
-from backend.app.domain.schemas.generation import QuickStartInput
+from backend.app.domain.schemas.generation import CharacterQuestionnaire, QuickStartInput
+from backend.app.domain.schemas.ruleset import RuleSetSchema
 
 
 def _timestamp() -> str:
@@ -28,7 +32,13 @@ def _log(message: str) -> None:
     print(f"[{timestamp}] {message}", flush=True)
 
 
-async def _main(input_path: Path, output_dir: Path, allow_repair: bool) -> None:
+async def _main(
+    input_path: Path,
+    output_dir: Path,
+    allow_repair: bool,
+    questionnaire_path: Path | None,
+    ruleset_path: Path,
+) -> None:
     _log(f"读取快速开团输入: {input_path}")
     quick_start = QuickStartInput.model_validate(
         json.loads(input_path.read_text(encoding="utf-8"))
@@ -38,9 +48,14 @@ async def _main(input_path: Path, output_dir: Path, allow_repair: bool) -> None:
     _log(f"本次 case_id: {quick_start.case_id}")
     _log(f"产物输出目录: {run_dir}")
     _log(f"repair pass: {'开启' if allow_repair else '关闭'}")
+    _log(
+        "角色链路: "
+        + (f"开启，questionnaire={questionnaire_path}" if questionnaire_path else "未开启")
+    )
 
     world_service = WorldGenerationService()
     module_pipeline = ModuleGenerationPipeline()
+    character_pipeline = CharacterReviewPipeline()
 
     flow_started_at = perf_counter()
 
@@ -102,6 +117,68 @@ async def _main(input_path: Path, output_dir: Path, allow_repair: bool) -> None:
         f"elapsed_ms={module_elapsed_ms}"
     )
 
+    character_summary: dict[str, object] | str = "pending"
+    if questionnaire_path is not None:
+        _log("开始执行 character 生成与审核链路")
+        questionnaire = CharacterQuestionnaire.model_validate(
+            json.loads(questionnaire_path.read_text(encoding="utf-8"))
+        )
+        ruleset = RuleSetSchema.model_validate(
+            json.loads(ruleset_path.read_text(encoding="utf-8"))
+        )
+        (run_dir / "character_questionnaire.json").write_text(
+            questionnaire.model_dump_json(indent=2),
+            encoding="utf-8",
+        )
+
+        character_started_at = perf_counter()
+        character_result = await character_pipeline.run(
+            questionnaire,
+            world_result.world,
+            module_result.module,
+            ruleset,
+            allow_repair=allow_repair,
+            progress_hook=_log,
+        )
+        character_elapsed_ms = round((perf_counter() - character_started_at) * 1000, 3)
+        (run_dir / "character.json").write_text(
+            character_result.character.model_dump_json(indent=2),
+            encoding="utf-8",
+        )
+        (run_dir / "character_generation_report.json").write_text(
+            character_result.model_dump_json(indent=2),
+            encoding="utf-8",
+        )
+        if character_result.initial_raw_text is not None:
+            (run_dir / "character_initial_raw_response.txt").write_text(
+                character_result.initial_raw_text,
+                encoding="utf-8",
+            )
+        if character_result.repair_raw_text is not None:
+            (run_dir / "character_repair_raw_response.txt").write_text(
+                character_result.repair_raw_text,
+                encoding="utf-8",
+            )
+        _log(
+            "character 链路完成: "
+            f"initial={character_result.initial_review_report.review_result}, "
+            f"final={character_result.final_review_report.review_result}, "
+            f"repair_attempted={character_result.repair_attempted}, "
+            f"repaired={character_result.repaired}, "
+            f"elapsed_ms={character_elapsed_ms}"
+        )
+        character_summary = {
+            "initial_status": character_result.initial_review_report.status,
+            "final_status": character_result.final_review_report.status,
+            "initial_review_result": character_result.initial_review_report.review_result,
+            "final_review_result": character_result.final_review_report.review_result,
+            "repair_attempted": character_result.repair_attempted,
+            "repaired": character_result.repaired,
+            "elapsed_ms": character_elapsed_ms,
+            "artifact": str(run_dir / "character.json"),
+            "report_artifact": str(run_dir / "character_generation_report.json"),
+        }
+
     total_elapsed_ms = round((perf_counter() - flow_started_at) * 1000, 3)
     summary = {
         "case_id": quick_start.case_id,
@@ -123,8 +200,8 @@ async def _main(input_path: Path, output_dir: Path, allow_repair: bool) -> None:
             "artifact": str(run_dir / "module.json"),
             "report_artifact": str(run_dir / "module_generation_report.json"),
         },
+        "character": character_summary,
         "pipeline_placeholders": {
-            "character_pipeline": "pending",
             "session_zero": "pending",
             "turn_loop": "pending",
             "session_report": "pending",
@@ -149,6 +226,18 @@ def main() -> None:
         default=Path("artifacts/runs"),
     )
     parser.add_argument(
+        "--questionnaire",
+        type=Path,
+        default=None,
+        help="Optional questionnaire file to run the phase-1 character pipeline.",
+    )
+    parser.add_argument(
+        "--ruleset",
+        type=Path,
+        default=Path("artifacts/rulesets/min_ruleset.json"),
+        help="Ruleset used by the character pipeline.",
+    )
+    parser.add_argument(
         "--no-repair",
         action="store_true",
         help="Disable the automatic repair pass for warn/fail modules.",
@@ -160,6 +249,8 @@ def main() -> None:
             input_path=args.input,
             output_dir=args.output_dir,
             allow_repair=not args.no_repair,
+            questionnaire_path=args.questionnaire,
+            ruleset_path=args.ruleset,
         )
     )
 

@@ -99,6 +99,50 @@ uv run python scripts/perf/perf_world_module_generation.py \
   --output artifacts/evals/perf_rainy_town.json
 ```
 
+### Phase 1 Module 3
+
+单 case 生成角色草案：
+
+```bash
+uv run python scripts/phase1/generate_character_draft.py \
+  --questionnaire artifacts/characters/quickstart_rainy_town_questionnaire.json \
+  --world artifacts/worlds/quickstart_rainy_town.json \
+  --module artifacts/modules/quickstart_rainy_town.json \
+  --output artifacts/characters/quickstart_rainy_town_draft.json
+```
+
+审核角色草案：
+
+```bash
+uv run python scripts/phase1/review_character_sheet.py \
+  --input artifacts/characters/quickstart_rainy_town_draft.json \
+  --world artifacts/worlds/quickstart_rainy_town.json \
+  --module artifacts/modules/quickstart_rainy_town.json \
+  --output artifacts/characters/quickstart_rainy_town_review.json
+```
+
+批量评测角色生成与审核链路：
+
+```bash
+uv run python scripts/eval/eval_character_review.py \
+  --questionnaires-dir artifacts/characters \
+  --world artifacts/worlds/quickstart_rainy_town.json \
+  --module artifacts/modules/quickstart_rainy_town.json \
+  --output artifacts/evals/character_batch_summary.json \
+  --max-cases 1
+```
+
+角色链路性能采样：
+
+```bash
+uv run python scripts/perf/perf_character_pipeline.py \
+  --questionnaire artifacts/characters/quickstart_rainy_town_questionnaire.json \
+  --world artifacts/worlds/quickstart_rainy_town.json \
+  --module artifacts/modules/quickstart_rainy_town.json \
+  --runs 3 \
+  --output artifacts/evals/perf_character_rainy_town.json
+```
+
 ### Phase 1 End-to-End Flow
 
 运行当前阶段一全流程脚本：
@@ -106,6 +150,15 @@ uv run python scripts/perf/perf_world_module_generation.py \
 ```bash
 uv run python scripts/phase1/run_quickstart_flow.py \
   --input artifacts/cases/quickstart_rainy_town.json \
+  --output-dir artifacts/runs
+```
+
+带角色问卷运行到 character 阶段：
+
+```bash
+uv run python scripts/phase1/run_quickstart_flow.py \
+  --input artifacts/cases/quickstart_rainy_town.json \
+  --questionnaire artifacts/characters/quickstart_rainy_town_questionnaire.json \
   --output-dir artifacts/runs
 ```
 
@@ -127,12 +180,18 @@ uv run python scripts/phase1/run_quickstart_flow.py \
 - `artifacts/runs/<case_id>/module_generation_report.json`
 - `artifacts/runs/<case_id>/module_initial_raw_response.txt`
 - `artifacts/runs/<case_id>/module_repair_raw_response.txt`
+- `artifacts/runs/<case_id>/character_questionnaire.json`
+- `artifacts/runs/<case_id>/character.json`
+- `artifacts/runs/<case_id>/character_generation_report.json`
+- `artifacts/runs/<case_id>/character_initial_raw_response.txt`
+- `artifacts/runs/<case_id>/character_repair_raw_response.txt`
 - `artifacts/runs/<case_id>/flow_summary.json`
 
 重点查看：
 
 - `flow_summary.json`：看全流程耗时、最终状态、是否触发 repair
 - `module_generation_report.json`：看 `initial_report` 和 `final_report` 的变化
+- `character_generation_report.json`：看 `initial_review_report` 和 `final_review_report` 的变化
 
 ## Project Layout
 

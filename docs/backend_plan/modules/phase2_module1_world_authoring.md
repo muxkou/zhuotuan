@@ -29,6 +29,18 @@ backend/app/application/validators/world_consistency_validator.py
 - `ValidationReport`
 - 世界版本 diff 报告
 
+世界编辑能力必须允许维护下列结构：
+
+1. `character_creation_profile`
+   - 基础属性定义
+   - 世界特有属性定义
+   - 属性语义区间说明
+   - 车卡禁止项
+2. `special_status_catalog`
+   - 特殊状态
+   - 行为约束
+   - 恢复提示
+
 ---
 
 ## 4. 建议脚本
@@ -52,4 +64,5 @@ backend/app/application/validators/world_consistency_validator.py
 
 1. 世界具备版本化和复用能力
 2. 同一世界可支撑多个模组草案生成
-3. 世界编辑与重校验 P95 < 10s
+3. 世界编辑后仍可直接供角色审核链路消费
+4. 世界编辑与重校验 P95 < 10s

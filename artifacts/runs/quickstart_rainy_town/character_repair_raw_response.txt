@@ -1,18 +1,14 @@
 {
-  "quick_start": {
+  "questionnaire": {
     "case_id": "quickstart_rainy_town",
-    "genre": "中式怪谈调查",
-    "duration_minutes": 90,
-    "player_count": 3,
-    "tone": [
-      "潮湿",
-      "悬疑",
-      "压抑"
-    ],
-    "inspiration": "江南古镇、旧宅、暴雨、失踪案",
-    "horror_level": "medium",
-    "combat_ratio": "low",
-    "investigation_ratio": "high"
+    "player_id": "player_reporter_01",
+    "name_hint": "陈砚",
+    "identity_answer": "我想扮演一个为了旧案再次回到小镇的年轻记者。",
+    "motivation_answer": "失踪案线索和我妹妹当年的事情连到了一起，我必须亲自去查清楚。",
+    "specialty_answer": "我希望这个角色擅长调查、追问和从旧报道里找细节。",
+    "fear_answer": "我最怕最后发现妹妹当年其实已经被所有人默许牺牲。",
+    "relationship_answer": "我希望和一个本地知情人有复杂关系，既互相利用又彼此同情。",
+    "secret_answer": "我私下怀疑宗族长辈篡改过当年的调查记录，但没有确凿证据。"
   },
   "world": {
     "id": "quickstart_rainy_town",
@@ -130,5 +126,187 @@
       "古井广场的古井是水眼的泄压口，雨夜渗红水表明雨灵活动加剧。"
     ],
     "ai_freedom_level": "standard"
-  }
+  },
+  "ruleset": {
+    "id": "ruleset_light_cntrpg_v1",
+    "version": "v1",
+    "created_at": "2026-05-02T16:26:29.685771Z",
+    "source": "system",
+    "name": "原创轻规则",
+    "description": "阶段一短团使用的基础轻规则。",
+    "dice_formula": "2d6",
+    "difficulty_bands": {
+      "easy": 7,
+      "standard": 9,
+      "hard": 11
+    },
+    "attributes": [
+      "physique",
+      "agility",
+      "mind",
+      "willpower",
+      "social"
+    ],
+    "skills": [
+      "investigation",
+      "negotiation",
+      "stealth",
+      "combat",
+      "medicine",
+      "occult",
+      "craft",
+      "survival"
+    ],
+    "resource_rules": {
+      "hp": 8,
+      "mp": 8,
+      "stress": 0,
+      "fate_points": 1
+    }
+  },
+  "character": {
+    "id": "char_quickstart_rainy_town_player_reporter_01",
+    "version": "v1",
+    "created_at": "2026-05-03T03:29:39.223204Z",
+    "source": "llm",
+    "name": "陈砚",
+    "identity": "为寻找妹妹失踪真相而再次回到雨镇的调查记者",
+    "concept": "我想扮演一个为了旧案再次回到小镇的年轻记者。。失踪案线索和我妹妹当年的事情连到了一起，我必须亲自去查清楚。",
+    "personality_tags": [
+      "执着追查",
+      "多疑敏感"
+    ],
+    "module_motivation": "妹妹的失踪案与当前少年失踪案在手法和天气条件上高度相似，我必须深入调查陈家老宅的地下秘密，找出被掩盖的真相。",
+    "attributes": {
+      "physique": -1,
+      "agility": 0,
+      "mind": 3,
+      "willpower": 1,
+      "social": 1
+    },
+    "skills": {
+      "investigation": 3,
+      "negotiation": 1,
+      "stealth": 1,
+      "survival": 1,
+      "combat": 0,
+      "medicine": 0,
+      "occult": 0,
+      "craft": 0
+    },
+    "strengths": [
+      "新闻嗅觉敏锐：能从零碎信息中快速串联线索，并在旧报道中发现被忽略的细节"
+    ],
+    "weaknesses": [
+      "过度代入个人感情：涉及妹妹旧案时常失去客观判断，容易冲动行事"
+    ],
+    "fears": [
+      "最后发现妹妹当年其实已经被所有人默许牺牲"
+    ],
+    "secret": "私下怀疑宗族长辈篡改过当年的调查记录，但缺少确凿证据",
+    "relationships": [
+      {
+        "target": "李姐",
+        "type": "秘密线人",
+        "note": "互相利用又彼此同情——李姐曾暗中提供过与妹妹失踪相关的老档案，但要求陈砚帮她调查茶馆里出现的怪事作为交换"
+      }
+    ],
+    "inventory": [
+      "妹妹的旧照片（背面写着失踪日期和地点，边角磨损严重）",
+      "记录本与钢笔（封面内夹着当年旧案的剪报和手绘地图）"
+    ]
+  },
+  "review_summary": {
+    "status": "fail",
+    "hard_errors": [
+      {
+        "code": "attribute_budget_out_of_range",
+        "message": "attribute total 5 is outside allowed range [-2, 4]",
+        "field_path": "attributes",
+        "severity": "error",
+        "suggestion": "adjust attribute points to fit the starter ruleset budget"
+      },
+      {
+        "code": "skill_budget_exceeded",
+        "message": "skill total 17 exceeds allowed maximum 6",
+        "field_path": "skills",
+        "severity": "error",
+        "suggestion": "reduce skill bonuses to match the phase 1 starter budget"
+      }
+    ],
+    "warnings": [],
+    "suggestions": [
+      "当前身份不在世界推荐身份里，建议确认它是否仍方便切入线索和与其他玩家协作。"
+    ],
+    "metrics": {
+      "hard_error_count": 2,
+      "warning_count": 0,
+      "rules_status": "fail",
+      "world_status": "pass",
+      "module_status": "pass"
+    },
+    "review_result": "needs_revision",
+    "normalized_character": {
+      "id": "char_quickstart_rainy_town_player_reporter_01",
+      "version": "v1",
+      "created_at": "2026-05-03T03:29:39.223204Z",
+      "source": "llm",
+      "name": "陈砚",
+      "identity": "为寻找妹妹失踪真相而再次回到雨镇的调查记者",
+      "concept": "我想扮演一个为了旧案再次回到小镇的年轻记者。。失踪案线索和我妹妹当年的事情连到了一起，我必须亲自去查清楚。",
+      "personality_tags": [
+        "执着追查",
+        "多疑敏感"
+      ],
+      "module_motivation": "妹妹的失踪案与当前少年失踪案在手法和天气条件上高度相似，我必须深入调查陈家老宅的地下秘密，找出被掩盖的真相。",
+      "attributes": {
+        "physique": -1,
+        "agility": 0,
+        "mind": 3,
+        "willpower": 1,
+        "social": 2
+      },
+      "skills": {
+        "investigation": 3,
+        "negotiation": 2,
+        "stealth": 3,
+        "combat": 2,
+        "medicine": 1,
+        "occult": 1,
+        "craft": 2,
+        "survival": 3
+      },
+      "strengths": [
+        "新闻嗅觉敏锐：能从零碎信息中快速串联线索，并在旧报道中发现被忽略的细节"
+      ],
+      "weaknesses": [
+        "过度代入个人感情：涉及妹妹旧案时常失去客观判断，容易冲动行事"
+      ],
+      "fears": [
+        "最后发现妹妹当年其实已经被所有人默许牺牲"
+      ],
+      "secret": "私下怀疑宗族长辈篡改过当年的调查记录，但缺少确凿证据",
+      "relationships": [
+        {
+          "target": "李姐",
+          "type": "秘密线人",
+          "note": "互相利用又彼此同情——李姐曾暗中提供过与妹妹失踪相关的老档案，但要求陈砚帮她调查茶馆里出现的怪事作为交换"
+        }
+      ],
+      "inventory": [
+        "妹妹的旧照片（背面写着失踪日期和地点，边角磨损严重）",
+        "记录本与钢笔（封面内夹着当年旧案的剪报和手绘地图）"
+      ]
+    },
+    "blocking_reasons": [
+      "attribute total 5 is outside allowed range [-2, 4]",
+      "skill total 17 exceeds allowed maximum 6"
+    ],
+    "revision_suggestions": [
+      "adjust attribute points to fit the starter ruleset budget",
+      "reduce skill bonuses to match the phase 1 starter budget",
+      "当前身份不在世界推荐身份里，建议确认它是否仍方便切入线索和与其他玩家协作。"
+    ]
+  },
+  "target_review_result": "approved"
 }

@@ -1,12 +1,12 @@
 {
   "case_id": "quickstart_rainy_town",
-  "created_at": "2026-05-03T02:59:59.007774+00:00",
+  "created_at": "2026-05-03T03:30:31.433758+00:00",
   "input_file": "artifacts/cases/quickstart_rainy_town.json",
   "run_dir": "artifacts/runs/quickstart_rainy_town",
   "allow_repair": true,
   "world": {
     "status": "pass",
-    "elapsed_ms": 15250.835,
+    "elapsed_ms": 13585.69,
     "artifact": "artifacts/runs/quickstart_rainy_town/world.json"
   },
   "module": {
@@ -14,15 +14,25 @@
     "final_status": "pass",
     "repair_attempted": true,
     "repaired": true,
-    "elapsed_ms": 80803.474,
+    "elapsed_ms": 77107.015,
     "artifact": "artifacts/runs/quickstart_rainy_town/module.json",
     "report_artifact": "artifacts/runs/quickstart_rainy_town/module_generation_report.json"
   },
+  "character": {
+    "initial_status": "fail",
+    "final_status": "pass",
+    "initial_review_result": "needs_revision",
+    "final_review_result": "enhance",
+    "repair_attempted": true,
+    "repaired": true,
+    "elapsed_ms": 64181.61,
+    "artifact": "artifacts/runs/quickstart_rainy_town/character.json",
+    "report_artifact": "artifacts/runs/quickstart_rainy_town/character_generation_report.json"
+  },
   "pipeline_placeholders": {
-    "character_pipeline": "pending",
     "session_zero": "pending",
     "turn_loop": "pending",
     "session_report": "pending"
   },
-  "total_elapsed_ms": 96061.519
+  "total_elapsed_ms": 154884.632
 }

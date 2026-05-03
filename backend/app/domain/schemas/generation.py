@@ -2,6 +2,7 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from backend.app.domain.schemas.character import CharacterSheetSchema
 from backend.app.domain.schemas.common import ValidationReport
 from backend.app.domain.schemas.module import ModuleBlueprintSchema
 from backend.app.domain.schemas.world import WorldSchema
@@ -69,3 +70,67 @@ class ModulePlayabilityReport(ValidationReport):
         description="未被足够线索覆盖的秘密标识。",
     )
     clue_path_count: int = Field(default=0, description="当前指向核心秘密的关键线索数量。")
+
+
+class CharacterQuestionnaire(BaseModel):
+    """玩家填写的角色问卷输入。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    case_id: str = Field(description="本次角色创建绑定的 case id。")
+    player_id: str = Field(description="玩家唯一标识，用于区分不同玩家问卷。")
+    name_hint: str | None = Field(default=None, description="玩家偏好的姓名提示，可选。")
+    identity_answer: str = Field(description="玩家想扮演的身份回答。")
+    motivation_answer: str = Field(description="玩家给出的参团动机回答。")
+    specialty_answer: str = Field(description="玩家希望角色擅长的方向。")
+    fear_answer: str = Field(description="玩家希望角色害怕或在意的事物。")
+    relationship_answer: str | None = Field(
+        default=None,
+        description="玩家期望的初始关系或绑定对象，可选。",
+    )
+    secret_answer: str | None = Field(default=None, description="玩家接受的个人秘密线索，可选。")
+
+
+class CharacterGenerationOutput(BaseModel):
+    """角色生成服务的输出包装。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    character: CharacterSheetSchema
+    raw_text: str | None = Field(default=None, description="模型原始输出，便于调试。")
+
+
+class CharacterReviewReport(ValidationReport):
+    """角色审核后的统一报告。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    review_result: Literal["approved", "needs_revision", "warning", "enhance"] = Field(
+        description="面向上层流程的审核结论。"
+    )
+    normalized_character: CharacterSheetSchema | None = Field(
+        default=None,
+        description="审核后可继续向下游传递的角色对象。",
+    )
+    blocking_reasons: list[str] = Field(
+        default_factory=list,
+        description="阻塞通过的核心原因摘要。",
+    )
+    revision_suggestions: list[str] = Field(
+        default_factory=list,
+        description="建议玩家或修补流程优先处理的修改建议。",
+    )
+
+
+class CharacterGenerationRunOutput(BaseModel):
+    """角色生成完整流程的输出，包括审核和可选修补。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    character: CharacterSheetSchema
+    initial_review_report: CharacterReviewReport
+    final_review_report: CharacterReviewReport
+    repair_attempted: bool = Field(description="本次流程是否触发过 repair pass。")
+    repaired: bool = Field(description="repair 后最终角色对象是否替换了初始角色对象。")
+    initial_raw_text: str | None = Field(default=None, description="第一次生成时的原始模型输出。")
+    repair_raw_text: str | None = Field(default=None, description="repair pass 的原始模型输出。")

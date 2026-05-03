@@ -35,6 +35,7 @@ class RoomPreference(BaseModel):
 - `WorldSchema`
 - `ModuleBlueprintSchema`
 - `list[CharacterReviewReport]`
+- 审核通过顺序形成的 `approved_character_roster`
 
 ---
 
@@ -61,10 +62,12 @@ class SessionZeroPackage(BaseModel):
 ## 5. 核心逻辑
 
 1. 过滤未通过审核角色
-2. 为每个角色绑定至少一个模组钩子
-3. 生成玩家公开信息
-4. 生成系统可见的隐藏钩子
-5. 整理统一开场说明
+2. 检查最终通过角色人数是否落在 `module.player_count_min ~ module.player_count_max`
+3. 读取顺序审核结果，确认角色之间不存在未解决冲突
+4. 为每个角色绑定至少一个模组钩子
+5. 生成玩家公开信息
+6. 生成系统可见的隐藏钩子
+7. 整理统一开场说明
 
 ---
 
@@ -102,6 +105,8 @@ uv run python scripts/phase1/prepare_session_zero.py \
 2. 每名角色至少绑定 1 个模组钩子
 3. 公开信息不过度剧透
 4. 房间边界被正确记录
+5. 角色人数满足模组人数范围
+6. 角色 roster 不存在未处理冲突
 
 性能：
 

@@ -1,0 +1,11 @@
+{
+  "case_id": "quickstart_rainy_town",
+  "player_id": "player_reporter_01",
+  "name_hint": "陈砚",
+  "identity_answer": "我想扮演一个为了旧案再次回到小镇的年轻记者。",
+  "motivation_answer": "失踪案线索和我妹妹当年的事情连到了一起，我必须亲自去查清楚。",
+  "specialty_answer": "我希望这个角色擅长调查、追问和从旧报道里找细节。",
+  "fear_answer": "我最怕最后发现妹妹当年其实已经被所有人默许牺牲。",
+  "relationship_answer": "我希望和一个本地知情人有复杂关系，既互相利用又彼此同情。",
+  "secret_answer": "我私下怀疑宗族长辈篡改过当年的调查记录，但没有确凿证据。"
+}
