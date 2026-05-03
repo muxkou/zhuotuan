@@ -44,6 +44,20 @@ class ModuleGenerationOutput(BaseModel):
     raw_text: str | None = Field(default=None, description="模型原始输出，便于调试。")
 
 
+class ModuleGenerationRunOutput(BaseModel):
+    """模组生成完整流程的输出，包括校验和可选修补。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    module: ModuleBlueprintSchema
+    initial_report: "ModulePlayabilityReport"
+    final_report: "ModulePlayabilityReport"
+    repair_attempted: bool = Field(description="本次流程是否触发过 repair pass。")
+    repaired: bool = Field(description="repair 后最终模组对象是否替换了初始生成对象。")
+    initial_raw_text: str | None = Field(default=None, description="第一次生成时的原始模型输出。")
+    repair_raw_text: str | None = Field(default=None, description="repair pass 的原始模型输出。")
+
+
 class ModulePlayabilityReport(ValidationReport):
     """模组可运行性校验报告。"""
 

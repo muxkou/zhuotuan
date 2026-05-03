@@ -1,4 +1,5 @@
 import json
+import re
 from dataclasses import dataclass
 from typing import Any, TypeVar
 
@@ -116,9 +117,36 @@ class LLMClient:
             temperature=temperature,
         )
         try:
-            parsed = json.loads(result.content)
+            parsed = self._parse_json_object(result.content)
         except json.JSONDecodeError as exc:
             raise LLMResponseError("LLM did not return valid JSON.") from exc
         if not isinstance(parsed, dict):
             raise LLMResponseError("LLM JSON root must be an object.")
         return parsed, result.content
+
+    @staticmethod
+    def _parse_json_object(content: str) -> Any:
+        try:
+            return json.loads(content)
+        except json.JSONDecodeError:
+            pass
+
+        fenced_match = re.search(r"```(?:json)?\s*(\{.*\})\s*```", content, re.DOTALL)
+        if fenced_match:
+            candidate = fenced_match.group(1)
+            try:
+                return json.loads(candidate)
+            except json.JSONDecodeError:
+                content = candidate
+
+        start = content.find("{")
+        end = content.rfind("}")
+        if start != -1 and end != -1 and end > start:
+            content = content[start : end + 1]
+
+        sanitized = "".join(
+            char
+            for char in content
+            if char in ("\n", "\r", "\t") or ord(char) >= 32
+        )
+        return json.loads(sanitized)

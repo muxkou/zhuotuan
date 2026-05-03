@@ -13,7 +13,6 @@ from backend.app.domain.enums.game import ValidationStatus
 from backend.app.domain.schemas.common import ValidationReport
 
 
-
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", type=Path, required=True)

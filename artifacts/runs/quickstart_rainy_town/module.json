@@ -1,0 +1,70 @@
+{
+  "id": "module_rainy_town_001",
+  "version": "1.0",
+  "created_at": "2026-05-03T02:59:14.447199Z",
+  "source": "llm",
+  "world_id": "rainy_town_001",
+  "name": "水影迷踪",
+  "player_count_min": 2,
+  "player_count_max": 4,
+  "duration_minutes": 90,
+  "opening_hook": "连续三周的暴雨让雨镇笼罩在潮湿与不安中。今日清晨，镇口祠堂的守灵人沈伯失踪了——他昨晚明明还在祠堂守夜，今早却只留下一滩积水。你们（调查者）是收到匿名举报信后赶到镇上的，信上只有一句话：‘水里的东西快出来了。’",
+  "core_secret": "古井中镇压的并非单一怨念，而是数百年前因水患被献祭的整个村庄的集体执念。它们通过‘水影’附身活人，替换人的影子，最终取代其身份。守门人家族每隔九十年需要举行一次‘换水’仪式，用活人的记忆与情感加固封印。现任守门人沈伯为了阻止最后一次换水（因为他不想牺牲无辜者），故意打开了封印的裂缝，导致水影外溢，他自己也被反噬失踪。",
+  "major_conflict": "水影正在逐渐侵蚀雨镇居民的影子，已有至少五人被替换，他们潜伏在镇上试图完成‘影占人’的过程。同时，市调查组中混入了一名被水影替换的成员，正试图引导调查者误入歧途，破坏任何可能重新封印的尝试。调查者必须在七十二小时内（湿气值达到临界前）找到沈伯，修复封印，否则全镇将被水影吞噬。",
+  "required_npcs": [
+    "沈伯",
+    "小沈（沈玉）",
+    "李队长",
+    "陈阿婆"
+  ],
+  "key_locations": [
+    "沈家旧宅天井",
+    "镇口祠堂后院古井",
+    "废弃镇卫生院地下室",
+    "雨巷中的青砖墙"
+  ],
+  "key_clues": [
+    {
+      "clue_id": "clue_water_stain",
+      "target_secret_id": "core_secret",
+      "location_id": "沈家旧宅天井",
+      "fallback_clue_ids": []
+    },
+    {
+      "clue_id": "clue_old_diary",
+      "target_secret_id": "core_secret",
+      "location_id": "镇口祠堂后院古井",
+      "fallback_clue_ids": []
+    },
+    {
+      "clue_id": "clue_hospital_basement",
+      "target_secret_id": "core_secret",
+      "location_id": "废弃镇卫生院地下室",
+      "fallback_clue_ids": []
+    },
+    {
+      "clue_id": "clue_brick_wall",
+      "target_secret_id": "core_secret",
+      "location_id": "雨巷中的青砖墙",
+      "fallback_clue_ids": [
+        "clue_old_diary"
+      ]
+    }
+  ],
+  "threat_clock_id": "threat_clock_rainy_town_001",
+  "endings": {
+    "good": "调查者们找到沈伯（被困在镜像世界），利用日记和咒文知识修复封印，将被替换的居民恢复正常。李队长被揭露并驱逐。雨镇恢复平静。",
+    "partial": "封印被修复，但沈伯牺牲了自己来填补裂缝。水影被暂时压制，但仍有残留，部分被替换者无法复原。调查者背负着水债离开。",
+    "bad": "封印彻底崩溃，整个雨镇被水影吞噬，所有的影子替换了主人。调查者也被困在镜像世界中，成为新的‘祭品’。"
+  },
+  "ai_do_not_change": [
+    "古井中镇压的是数百年前因水患被献祭的整个村庄的集体执念。",
+    "水影替换人的影子的机制必须保留。",
+    "换水仪式需要活人的记忆与情感来加固封印。",
+    "现任守门人沈伯是主动打开封印裂缝的。",
+    "市调查组组长李队长已被水影替换。",
+    "调查者必须在场景中用湿气值机制（来自世界草案）来感知危机。",
+    "最终结局判定基于是否找到沈伯、是否修复封印、是否击败被替换的水影。"
+  ],
+  "ai_freedom_level": "standard"
+}

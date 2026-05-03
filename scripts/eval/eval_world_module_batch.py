@@ -4,19 +4,15 @@ import json
 from pathlib import Path
 from time import perf_counter
 
-from backend.app.application.services.module_generation_service import ModuleGenerationService
+from backend.app.application.services.module_generation_pipeline import ModuleGenerationPipeline
 from backend.app.application.services.world_generation_service import WorldGenerationService
-from backend.app.application.validators.module_playability_validator import (
-    ModulePlayabilityValidator,
-)
 from backend.app.domain.enums.game import ValidationStatus
 from backend.app.domain.schemas.generation import QuickStartInput
 
 
 async def _main(cases_dir: Path, output_path: Path, max_cases: int | None) -> None:
     world_service = WorldGenerationService()
-    module_service = ModuleGenerationService()
-    validator = ModulePlayabilityValidator()
+    module_pipeline = ModuleGenerationPipeline()
 
     case_paths = sorted(cases_dir.glob("quickstart_*.json"))
     if max_cases is not None:
@@ -28,15 +24,22 @@ async def _main(cases_dir: Path, output_path: Path, max_cases: int | None) -> No
         started_at = perf_counter()
         try:
             world_result = await world_service.generate(quick_start)
-            module_result = await module_service.generate(quick_start, world_result.world)
-            report = validator.validate(module_result.module, world_result.world)
+            module_result = await module_pipeline.run(
+                quick_start,
+                world_result.world,
+                allow_repair=True,
+            )
             elapsed_ms = round((perf_counter() - started_at) * 1000, 3)
             results.append(
                 {
                     "case_id": quick_start.case_id,
-                    "status": report.status,
-                    "clue_path_count": report.clue_path_count,
+                    "status": module_result.final_report.status,
+                    "clue_path_count": module_result.final_report.clue_path_count,
                     "elapsed_ms": elapsed_ms,
+                    "repair_attempted": module_result.repair_attempted,
+                    "repaired": module_result.repaired,
+                    "initial_status": module_result.initial_report.status,
+                    "final_status": module_result.final_report.status,
                 }
             )
         except Exception as exc:  # noqa: BLE001
@@ -47,6 +50,8 @@ async def _main(cases_dir: Path, output_path: Path, max_cases: int | None) -> No
                     "status": ValidationStatus.FAIL,
                     "clue_path_count": 0,
                     "elapsed_ms": elapsed_ms,
+                    "repair_attempted": False,
+                    "repaired": False,
                     "error": str(exc),
                 }
             )

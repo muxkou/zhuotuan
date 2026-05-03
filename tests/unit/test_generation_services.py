@@ -1,3 +1,4 @@
+from backend.app.application.services.module_generation_pipeline import ModuleGenerationPipeline
 from backend.app.application.services.module_generation_service import ModuleGenerationService
 from backend.app.application.services.world_generation_service import WorldGenerationService
 from backend.app.domain.schemas.generation import QuickStartInput
@@ -96,3 +97,25 @@ async def test_module_generation_service_returns_valid_output() -> None:
     result = await service.generate(make_quick_start(), world)
     assert result.module.world_id == world.id
     assert result.module.source == "llm"
+
+
+async def test_module_generation_pipeline_repairs_warn_module() -> None:
+    world = make_world()
+    broken_module = make_module()
+    broken_module.key_clues[0].fallback_clue_ids = []
+    broken_module.key_clues[1].fallback_clue_ids = []
+    broken_module.key_clues[2].fallback_clue_ids = []
+    repaired_module = make_module()
+
+    pipeline = ModuleGenerationPipeline(
+        module_service=ModuleGenerationService(
+            llm_client=FakeLLMClient([broken_module, repaired_module])
+        )
+    )
+
+    result = await pipeline.run(make_quick_start(), world, allow_repair=True)
+
+    assert result.repair_attempted is True
+    assert result.repaired is True
+    assert result.initial_report.status == "warn"
+    assert result.final_report.status == "pass"

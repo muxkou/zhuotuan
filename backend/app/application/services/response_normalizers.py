@@ -57,7 +57,10 @@ def normalize_world_payload(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def normalize_module_payload(payload: dict[str, Any]) -> dict[str, Any]:
-    normalized = dict(payload)
+    if isinstance(payload.get("module"), dict):
+        normalized = dict(payload["module"])
+    else:
+        normalized = dict(payload)
     for key in ("required_npcs", "key_locations", "ai_do_not_change"):
         if key in normalized:
             normalized[key] = _normalize_string_list(normalized[key])
@@ -71,7 +74,14 @@ def normalize_module_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "default": "standard",
         "flexible": "high",
     }
-    if isinstance(freedom_level, str):
+    if isinstance(freedom_level, int):
+        numeric_mapping = {
+            1: "conservative",
+            2: "standard",
+            3: "high",
+        }
+        normalized["ai_freedom_level"] = numeric_mapping.get(freedom_level, "standard")
+    elif isinstance(freedom_level, str):
         normalized_level = freedom_mapping.get(freedom_level, freedom_level)
         if normalized_level not in {"conservative", "standard", "high"}:
             lowered = normalized_level.lower()
@@ -137,5 +147,10 @@ def normalize_module_payload(payload: dict[str, Any]) -> dict[str, Any]:
                     }
                 )
         normalized["key_clues"] = normalized_clues
+
+    threat_clock_id = normalized.get("threat_clock_id")
+    if not isinstance(threat_clock_id, str) or not threat_clock_id.strip():
+        module_id = normalized.get("id") or "module"
+        normalized["threat_clock_id"] = f"{module_id}_threat_clock"
 
     return normalized
