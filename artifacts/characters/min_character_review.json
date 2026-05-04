@@ -3,20 +3,24 @@
   "hard_errors": [],
   "warnings": [],
   "suggestions": [
+    "当前身份不在推荐身份中，建议确认它仍能自然切入本世界的调查或冲突。",
     "当前身份不在世界推荐身份里，建议确认它是否仍方便切入线索和与其他玩家协作。"
   ],
   "metrics": {
     "hard_error_count": 0,
     "warning_count": 0,
     "rules_status": "pass",
+    "world_profile_status": "pass",
     "world_status": "pass",
-    "module_status": "pass"
+    "module_status": "pass",
+    "roster_status": "pass",
+    "approved_roster_size": 0
   },
   "review_result": "enhance",
   "normalized_character": {
     "id": "char_chenyan_v1",
     "version": "v1",
-    "created_at": "2026-05-02T16:26:29.686060Z",
+    "created_at": "2026-05-03T03:52:55.398731Z",
     "source": "system",
     "name": "陈砚",
     "identity": "外地记者",
@@ -34,6 +38,7 @@
       "willpower": 1,
       "social": 0
     },
+    "extra_attributes": {},
     "skills": {
       "investigation": 2,
       "negotiation": 1,
@@ -70,6 +75,9 @@
   },
   "blocking_reasons": [],
   "revision_suggestions": [
+    "当前身份不在推荐身份中，建议确认它仍能自然切入本世界的调查或冲突。",
     "当前身份不在世界推荐身份里，建议确认它是否仍方便切入线索和与其他玩家协作。"
-  ]
+  ],
+  "queue_position": null,
+  "roster_conflicts": []
 }

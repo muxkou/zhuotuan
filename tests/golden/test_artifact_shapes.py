@@ -7,6 +7,7 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_min_world_shape_is_stable() -> None:
     data = json.loads((ROOT / "artifacts/worlds/min_world.json").read_text(encoding="utf-8"))
     assert sorted(data.keys()) == [
+        "character_creation_profile",
         "common_locations",
         "created_at",
         "era",
@@ -19,6 +20,7 @@ def test_min_world_shape_is_stable() -> None:
         "public_rules",
         "recommended_roles",
         "source",
+        "special_status_catalog",
         "taboos",
         "tagline",
         "tone",

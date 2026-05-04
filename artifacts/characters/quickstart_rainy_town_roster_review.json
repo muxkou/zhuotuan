@@ -1,0 +1,20 @@
+{
+  "total_characters": 1,
+  "approved_count": 0,
+  "results": [
+    {
+      "file": "artifacts/characters/quickstart_rainy_town_draft.json",
+      "character_id": "char_quickstart_rainy_town_player_reporter_01",
+      "status": "fail",
+      "review_result": "needs_revision",
+      "queue_position": 1,
+      "roster_conflicts": [],
+      "blocking_reasons": [
+        "attribute total 9 is outside allowed range [-2, 4]",
+        "skill total 7 exceeds allowed maximum 6",
+        "attribute total 9 is outside world budget [-2, 4]",
+        "character already knows too much about the module core secret: 雨魃"
+      ]
+    }
+  ]
+}

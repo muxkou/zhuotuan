@@ -10,11 +10,11 @@ class AttributeScore(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    physique: int = Field(ge=-2, le=3, description="体魄，表示力量、耐力和近身行动能力。")
-    agility: int = Field(ge=-2, le=3, description="机敏，表示反应、潜行、闪避等能力。")
-    mind: int = Field(ge=-2, le=3, description="心智，表示调查、推理、知识理解能力。")
-    willpower: int = Field(ge=-2, le=3, description="意志，表示抗压、抵抗恐惧、坚持能力。")
-    social: int = Field(ge=-2, le=3, description="社交，表示说服、伪装、威胁、共情能力。")
+    physique: int = Field(ge=0, le=3, description="体魄，表示力量、耐力和近身行动能力。")
+    agility: int = Field(ge=0, le=3, description="机敏，表示反应、潜行、闪避等能力。")
+    mind: int = Field(ge=0, le=3, description="心智，表示调查、推理、知识理解能力。")
+    willpower: int = Field(ge=0, le=3, description="意志，表示抗压、抵抗恐惧、坚持能力。")
+    social: int = Field(ge=0, le=3, description="社交，表示说服、伪装、威胁、共情能力。")
 
 
 class SkillBonus(BaseModel):
@@ -56,7 +56,7 @@ class RuleSetSchema(BaseArtifact):
 
 def validate_attributes(
     attrs: AttributeScore,
-    budget_min: int = -2,
+    budget_min: int = 0,
     budget_max: int = 4,
 ) -> list[ErrorItem]:
     total = attrs.physique + attrs.agility + attrs.mind + attrs.willpower + attrs.social

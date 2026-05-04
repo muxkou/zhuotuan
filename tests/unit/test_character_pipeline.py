@@ -10,6 +10,9 @@ from backend.app.application.validators.character_module_validator import (
 from backend.app.application.validators.character_rules_validator import (
     CharacterRulesValidator,
 )
+from backend.app.application.validators.character_world_profile_validator import (
+    CharacterWorldProfileValidator,
+)
 from backend.app.application.validators.character_world_validator import (
     CharacterWorldValidator,
 )
@@ -79,6 +82,93 @@ def make_world() -> WorldSchema:
         taboos=["不可夜探后井。"],
         recommended_roles=["外地记者", "医生", "巡警"],
         narration_style={"horror_level": 2, "dialogue_style": "克制", "pacing": "steady"},
+        character_creation_profile={
+            "base_attributes": [
+                {
+                    "key": "physique",
+                    "label": "体魄",
+                    "description": "力量与耐力。",
+                    "min_value": 0,
+                    "max_value": 3,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "偏弱"},
+                        {"min_value": 1, "max_value": 2, "summary": "正常"},
+                        {"min_value": 3, "max_value": 3, "summary": "强健"},
+                    ],
+                    "is_core": True,
+                },
+                {
+                    "key": "agility",
+                    "label": "机敏",
+                    "description": "反应与潜行。",
+                    "min_value": 0,
+                    "max_value": 3,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "偏慢"},
+                        {"min_value": 1, "max_value": 2, "summary": "正常"},
+                        {"min_value": 3, "max_value": 3, "summary": "灵活"},
+                    ],
+                    "is_core": True,
+                },
+                {
+                    "key": "mind",
+                    "label": "心智",
+                    "description": "理解与推理。",
+                    "min_value": 0,
+                    "max_value": 3,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "偏慢"},
+                        {"min_value": 1, "max_value": 2, "summary": "正常"},
+                        {"min_value": 3, "max_value": 3, "summary": "敏锐"},
+                    ],
+                    "is_core": True,
+                },
+                {
+                    "key": "willpower",
+                    "label": "意志",
+                    "description": "抗压和定力。",
+                    "min_value": 0,
+                    "max_value": 3,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "偏弱"},
+                        {"min_value": 1, "max_value": 2, "summary": "正常"},
+                        {"min_value": 3, "max_value": 3, "summary": "坚定"},
+                    ],
+                    "is_core": True,
+                },
+                {
+                    "key": "social",
+                    "label": "社交",
+                    "description": "表达与共情。",
+                    "min_value": 0,
+                    "max_value": 3,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "木讷"},
+                        {"min_value": 1, "max_value": 2, "summary": "正常"},
+                        {"min_value": 3, "max_value": 3, "summary": "老练"},
+                    ],
+                    "is_core": True,
+                },
+            ],
+            "world_specific_attributes": [
+                {
+                    "key": "spirit_sensitivity",
+                    "label": "灵感",
+                    "description": "对异常与神话痕迹的敏感度。",
+                    "min_value": 0,
+                    "max_value": 2,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "迟钝"},
+                        {"min_value": 1, "max_value": 2, "summary": "敏感"},
+                    ],
+                    "is_core": False,
+                }
+            ],
+            "total_attribute_budget_min": 0,
+            "total_attribute_budget_max": 5,
+            "identity_guidelines": ["优先选择能自然介入调查的身份。"],
+            "forbidden_character_elements": ["明确可控的强超自然能力"],
+        },
     )
 
 
@@ -137,6 +227,7 @@ def make_character(**overrides) -> CharacterSheetSchema:
             "willpower": 1,
             "social": 0,
         },
+        "extra_attributes": {},
         "skills": {
             "investigation": 2,
             "negotiation": 1,
@@ -191,6 +282,18 @@ def test_character_world_validator_flags_forbidden_superpower() -> None:
     assert report.status == "fail"
 
 
+def test_character_world_profile_validator_accepts_world_specific_attribute() -> None:
+    character = make_character(extra_attributes={"spirit_sensitivity": 1})
+    report = CharacterWorldProfileValidator().validate(character, make_world())
+    assert report.status == "pass"
+
+
+def test_character_world_profile_validator_rejects_unknown_attribute() -> None:
+    character = make_character(extra_attributes={"divinity": 2})
+    report = CharacterWorldProfileValidator().validate(character, make_world())
+    assert report.status == "fail"
+
+
 def test_character_module_validator_flags_spoiler_character() -> None:
     character = make_character(
         secret="我早就知道旧案与宗族献祭有关，而且掌握完整名单。",
@@ -241,3 +344,20 @@ async def test_character_review_pipeline_repairs_bad_character() -> None:
     assert run_output.repaired is True
     assert run_output.initial_review_report.review_result == "needs_revision"
     assert run_output.final_review_report.review_result in {"approved", "enhance"}
+
+
+def test_character_review_pipeline_detects_roster_conflict() -> None:
+    pipeline = CharacterReviewPipeline()
+    existing_character = make_character()
+    conflicting_character = make_character(id="char_2", name="陈砚")
+    report = pipeline.review(
+        conflicting_character,
+        make_world(),
+        make_module(),
+        make_ruleset(),
+        existing_characters=[existing_character],
+        queue_position=2,
+    )
+    assert report.status == "fail"
+    assert report.queue_position == 2
+    assert report.roster_conflicts

@@ -1,7 +1,7 @@
 {
   "id": "world_tanxi_records_v1",
   "version": "v1",
-  "created_at": "2026-05-02T16:26:29.686033Z",
+  "created_at": "2026-05-04T02:48:32.540954Z",
   "source": "system",
   "name": "檀溪异闻录",
   "tagline": "一个被水雾、旧宅、宗族和失踪传闻笼罩的江南古镇世界。",
@@ -43,5 +43,229 @@
     "horror_level": 2,
     "dialogue_style": "克制",
     "pacing": "steady"
-  }
+  },
+  "character_creation_profile": {
+    "base_attributes": [
+      {
+        "key": "physique",
+        "label": "体魄",
+        "description": "力量、耐力、负重、近身动作能力。",
+        "min_value": 0,
+        "max_value": 3,
+        "semantic_bands": [
+          {
+            "min_value": 0,
+            "max_value": 0,
+            "summary": "体魄偏弱，长时间奔跑、负重或对抗会非常困难。",
+            "examples": [
+              "在该维度明显吃力。"
+            ]
+          },
+          {
+            "min_value": 1,
+            "max_value": 2,
+            "summary": "体魄正常，能应对普通人的常见体能挑战。",
+            "examples": [
+              "可以完成普通人的常规表现。"
+            ]
+          },
+          {
+            "min_value": 3,
+            "max_value": 3,
+            "summary": "体魄出众，近身对抗和耐力表现明显优于常人。",
+            "examples": [
+              "在这一维度属于非常突出。"
+            ]
+          }
+        ],
+        "is_core": true
+      },
+      {
+        "key": "agility",
+        "label": "机敏",
+        "description": "反应、平衡、闪避、潜行、手上动作。",
+        "min_value": 0,
+        "max_value": 3,
+        "semantic_bands": [
+          {
+            "min_value": 0,
+            "max_value": 0,
+            "summary": "动作笨拙，反应偏慢，细致动作和闪避较难。",
+            "examples": [
+              "在该维度明显吃力。"
+            ]
+          },
+          {
+            "min_value": 1,
+            "max_value": 2,
+            "summary": "机敏正常，可以处理普通移动与潜行动作。",
+            "examples": [
+              "可以完成普通人的常规表现。"
+            ]
+          },
+          {
+            "min_value": 3,
+            "max_value": 3,
+            "summary": "机敏出众，适合潜行、闪避与细密动作。",
+            "examples": [
+              "在这一维度属于非常突出。"
+            ]
+          }
+        ],
+        "is_core": true
+      },
+      {
+        "key": "mind",
+        "label": "心智",
+        "description": "理解力、推理、观察、调查、知识整合。",
+        "min_value": 0,
+        "max_value": 3,
+        "semantic_bands": [
+          {
+            "min_value": 0,
+            "max_value": 0,
+            "summary": "理解复杂信息较慢，难以快速读懂隐含关系。",
+            "examples": [
+              "在该维度明显吃力。"
+            ]
+          },
+          {
+            "min_value": 1,
+            "max_value": 2,
+            "summary": "能正常理解、分析并处理调查信息。",
+            "examples": [
+              "可以完成普通人的常规表现。"
+            ]
+          },
+          {
+            "min_value": 3,
+            "max_value": 3,
+            "summary": "推理和洞察非常强，能快速抓住关键矛盾。",
+            "examples": [
+              "在这一维度属于非常突出。"
+            ]
+          }
+        ],
+        "is_core": true
+      },
+      {
+        "key": "willpower",
+        "label": "意志",
+        "description": "抗压、忍耐、抵抗恐惧、坚持目标。",
+        "min_value": 0,
+        "max_value": 3,
+        "semantic_bands": [
+          {
+            "min_value": 0,
+            "max_value": 0,
+            "summary": "容易在恐惧、痛苦或诱惑面前动摇。",
+            "examples": [
+              "在该维度明显吃力。"
+            ]
+          },
+          {
+            "min_value": 1,
+            "max_value": 2,
+            "summary": "具备普通人的承压与坚持能力。",
+            "examples": [
+              "可以完成普通人的常规表现。"
+            ]
+          },
+          {
+            "min_value": 3,
+            "max_value": 3,
+            "summary": "在恐惧、迷惑和精神压迫下依然能保持清醒。",
+            "examples": [
+              "在这一维度属于非常突出。"
+            ]
+          }
+        ],
+        "is_core": true
+      },
+      {
+        "key": "social",
+        "label": "社交",
+        "description": "说服、伪装、威吓、安抚、共情与人情判断。",
+        "min_value": 0,
+        "max_value": 3,
+        "semantic_bands": [
+          {
+            "min_value": 0,
+            "max_value": 0,
+            "summary": "不善表达或读人，交流中经常处于下风。",
+            "examples": [
+              "在该维度明显吃力。"
+            ]
+          },
+          {
+            "min_value": 1,
+            "max_value": 2,
+            "summary": "社交能力正常，能完成常规沟通与劝说。",
+            "examples": [
+              "可以完成普通人的常规表现。"
+            ]
+          },
+          {
+            "min_value": 3,
+            "max_value": 3,
+            "summary": "在洞察人心、建立关系和影响他人上很有优势。",
+            "examples": [
+              "在这一维度属于非常突出。"
+            ]
+          }
+        ],
+        "is_core": true
+      }
+    ],
+    "world_specific_attributes": [],
+    "total_attribute_budget_min": 0,
+    "total_attribute_budget_max": 4,
+    "identity_guidelines": [
+      "优先选择能自然卷入调查、求助、护送、追凶、守秘的普通人身份。",
+      "角色应保留缺点和代价，不建议直接写成全能英雄或超能力者。"
+    ],
+    "forbidden_character_elements": [
+      "明确可控的强超自然能力",
+      "直接知道模组核心真相",
+      "完全拒绝与队友合作的人设"
+    ]
+  },
+  "special_status_catalog": [
+    {
+      "key": "bewildered",
+      "label": "迷惑",
+      "description": "角色被异常现象、怪物或神话信息扰乱判断。",
+      "trigger_sources": [
+        "直视异常本体",
+        "长时间接触污染物",
+        "听闻不可承受的真相"
+      ],
+      "behavioral_constraints": [
+        "短时间内难以分辨真伪线索",
+        "在 AI KP 演绎中应出现迟疑、误认或错误联想"
+      ],
+      "recovery_hints": [
+        "脱离污染源",
+        "获得同伴提醒",
+        "完成一次稳定情绪的短暂休整"
+      ]
+    },
+    {
+      "key": "haunted",
+      "label": "侵扰",
+      "description": "角色持续受到异常注视、低语或旧案残响干扰。",
+      "trigger_sources": [
+        "靠近核心异常地点",
+        "持有被污染遗物"
+      ],
+      "behavioral_constraints": [
+        "休息和独处时更容易触发幻听、梦魇或回忆闪回",
+        "AI KP 不应把该状态直接演成完全失控"
+      ],
+      "recovery_hints": [
+        "找到状态来源",
+        "完成净化或安抚仪式"
+      ]
+    }
+  ]
 }

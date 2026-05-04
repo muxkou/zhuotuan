@@ -54,6 +54,89 @@ def normalize_world_payload(payload: dict[str, Any]) -> dict[str, Any]:
             else value
             for key, value in narration_style.items()
         }
+
+    if "character_creation_profile" not in normalized:
+        normalized["character_creation_profile"] = {
+            "base_attributes": [
+                {
+                    "key": "physique",
+                    "label": "体魄",
+                    "description": "力量、耐力、负重、近身动作能力。",
+                    "min_value": 0,
+                    "max_value": 3,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "体魄偏弱。"},
+                        {"min_value": 1, "max_value": 2, "summary": "体魄正常。"},
+                        {"min_value": 3, "max_value": 3, "summary": "体魄出众。"},
+                    ],
+                    "is_core": True,
+                },
+                {
+                    "key": "agility",
+                    "label": "机敏",
+                    "description": "反应、平衡、潜行与手上动作。",
+                    "min_value": 0,
+                    "max_value": 3,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "动作偏慢。"},
+                        {"min_value": 1, "max_value": 2, "summary": "机敏正常。"},
+                        {"min_value": 3, "max_value": 3, "summary": "反应和动作非常灵活。"},
+                    ],
+                    "is_core": True,
+                },
+                {
+                    "key": "mind",
+                    "label": "心智",
+                    "description": "理解、推理、调查与知识整合。",
+                    "min_value": 0,
+                    "max_value": 3,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "理解复杂信息比较吃力。"},
+                        {"min_value": 1, "max_value": 2, "summary": "思维能力正常。"},
+                        {"min_value": 3, "max_value": 3, "summary": "调查和推理能力非常强。"},
+                    ],
+                    "is_core": True,
+                },
+                {
+                    "key": "willpower",
+                    "label": "意志",
+                    "description": "抗压、忍耐、抵抗恐惧与诱惑。",
+                    "min_value": 0,
+                    "max_value": 3,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "容易在压力下动摇。"},
+                        {"min_value": 1, "max_value": 2, "summary": "意志力正常。"},
+                        {"min_value": 3, "max_value": 3, "summary": "能在恐惧和压力中保持清醒。"},
+                    ],
+                    "is_core": True,
+                },
+                {
+                    "key": "social",
+                    "label": "社交",
+                    "description": "说服、共情、读人和建立关系。",
+                    "min_value": 0,
+                    "max_value": 3,
+                    "semantic_bands": [
+                        {"min_value": 0, "max_value": 0, "summary": "不善表达或读人。"},
+                        {"min_value": 1, "max_value": 2, "summary": "社交能力正常。"},
+                        {"min_value": 3, "max_value": 3, "summary": "在人际判断和影响上明显强势。"},
+                    ],
+                    "is_core": True,
+                },
+            ],
+            "world_specific_attributes": [],
+            "total_attribute_budget_min": 0,
+            "total_attribute_budget_max": 4,
+            "identity_guidelines": _normalize_string_list(normalized.get("recommended_roles", [])),
+            "forbidden_character_elements": [
+                "明确可控的强超自然能力",
+                "直接知道模组核心真相",
+                "完全拒绝与队友合作的人设",
+            ],
+        }
+
+    if "special_status_catalog" not in normalized:
+        normalized["special_status_catalog"] = []
     return normalized
 
 
@@ -173,11 +256,11 @@ def _coerce_int(value: Any, default: int = 0) -> int:
 
 def _normalize_attribute_value(value: Any) -> int:
     numeric = _coerce_int(value, 0)
-    if -2 <= numeric <= 3:
+    if 0 <= numeric <= 3:
         return numeric
     if 0 <= numeric <= 10:
-        return max(-2, min(3, numeric - 5))
-    return max(-2, min(3, numeric))
+        return max(0, min(3, round(numeric / 3)))
+    return max(0, min(3, numeric))
 
 
 def _normalize_skill_value(value: Any) -> int:
@@ -261,8 +344,9 @@ def normalize_character_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "survival": "survival",
         "生存": "survival",
     }
+    raw_attributes = normalized.get("attributes")
     normalized["attributes"] = _normalize_numeric_mapping(
-        normalized.get("attributes"),
+        raw_attributes,
         aliases=attributes_aliases,
         defaults={
             "physique": 0,
@@ -273,6 +357,16 @@ def normalize_character_payload(payload: dict[str, Any]) -> dict[str, Any]:
         },
         value_normalizer=_normalize_attribute_value,
     )
+    extra_attributes: dict[str, int] = {}
+    if isinstance(raw_attributes, dict):
+        for key, raw_value in raw_attributes.items():
+            string_key = str(key)
+            if string_key not in attributes_aliases:
+                extra_attributes[string_key] = _normalize_attribute_value(raw_value)
+    if isinstance(normalized.get("extra_attributes"), dict):
+        for key, raw_value in normalized["extra_attributes"].items():
+            extra_attributes[str(key)] = _normalize_attribute_value(raw_value)
+    normalized["extra_attributes"] = extra_attributes
     normalized["skills"] = _normalize_numeric_mapping(
         normalized.get("skills"),
         aliases=skill_aliases,
@@ -333,6 +427,7 @@ def normalize_character_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "personality_tags",
         "module_motivation",
         "attributes",
+        "extra_attributes",
         "skills",
         "strengths",
         "weaknesses",

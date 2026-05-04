@@ -120,6 +120,14 @@ class CharacterReviewReport(ValidationReport):
         default_factory=list,
         description="建议玩家或修补流程优先处理的修改建议。",
     )
+    queue_position: int | None = Field(
+        default=None,
+        description="该角色在当前房间审核队列中的位置。",
+    )
+    roster_conflicts: list[str] = Field(
+        default_factory=list,
+        description="与已通过角色 roster 的冲突摘要。",
+    )
 
 
 class CharacterGenerationRunOutput(BaseModel):

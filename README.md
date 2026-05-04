@@ -121,6 +121,16 @@ uv run python scripts/phase1/review_character_sheet.py \
   --output artifacts/characters/quickstart_rainy_town_review.json
 ```
 
+顺序审核一个房间内的多张角色草案：
+
+```bash
+uv run python scripts/phase1/review_character_roster_queue.py \
+  --characters-dir artifacts/characters \
+  --world artifacts/worlds/quickstart_rainy_town.json \
+  --module artifacts/modules/quickstart_rainy_town.json \
+  --output artifacts/characters/quickstart_rainy_town_roster_review.json
+```
+
 批量评测角色生成与审核链路：
 
 ```bash
@@ -192,6 +202,13 @@ uv run python scripts/phase1/run_quickstart_flow.py \
 - `flow_summary.json`：看全流程耗时、最终状态、是否触发 repair
 - `module_generation_report.json`：看 `initial_report` 和 `final_report` 的变化
 - `character_generation_report.json`：看 `initial_review_report` 和 `final_review_report` 的变化
+
+当前阶段角色审核新增关注点：
+
+- world 中必须带 `character_creation_profile`
+- world 中必须带 `special_status_catalog`
+- character 会同时受轻规则预算和 world 车卡约束检查
+- 同一房间内的角色可以通过队列脚本按顺序审核，后提交者会参考已通过角色
 
 ## Project Layout
 

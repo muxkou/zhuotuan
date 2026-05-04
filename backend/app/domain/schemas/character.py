@@ -15,6 +15,10 @@ class CharacterSheetSchema(BaseArtifact):
     personality_tags: list[str] = Field(min_length=1, description="角色性格关键词。")
     module_motivation: str = Field(description="角色参与当前模组的直接动机。")
     attributes: AttributeScore = Field(description="角色属性面板。")
+    extra_attributes: dict[str, int] = Field(
+        default_factory=dict,
+        description="世界特有的额外属性，键必须在世界车卡规范中定义。",
+    )
     skills: SkillBonus = Field(description="角色技能修正。")
     strengths: list[str] = Field(min_length=1, description="角色优势或擅长点。")
     weaknesses: list[str] = Field(min_length=1, description="角色弱点。")

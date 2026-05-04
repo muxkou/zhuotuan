@@ -86,9 +86,11 @@ class CharacterRulesValidator:
         hard_errors.extend(validate_attributes(character.attributes))
         hard_errors.extend(validate_skill_budget(character.skills))
 
-        total_attributes = sum(character.attributes.model_dump().values())
+        total_attributes = sum(character.attributes.model_dump().values()) + sum(
+            character.extra_attributes.values()
+        )
         total_skills = sum(character.skills.model_dump().values())
-        if total_attributes <= -1:
+        if total_attributes <= 1:
             warnings.append(
                 ErrorItem(
                     code="low_attribute_budget",
@@ -109,6 +111,19 @@ class CharacterRulesValidator:
                     field_path="skills",
                     severity="warning",
                     suggestion="give the character at least one visible area of expertise",
+                )
+            )
+        maxed_skill_count = sum(
+            1 for value in character.skills.model_dump().values() if value >= 3
+        )
+        if maxed_skill_count >= 3:
+            warnings.append(
+                ErrorItem(
+                    code="over_concentrated_skills",
+                    message="the character has too many maxed skills for the phase-1 baseline",
+                    field_path="skills",
+                    severity="warning",
+                    suggestion="lower one of the maxed skills or spread the focus more naturally",
                 )
             )
 

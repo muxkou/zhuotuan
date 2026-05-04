@@ -34,19 +34,24 @@ async def _main(
         case_paths = case_paths[:max_cases]
 
     results: list[dict] = []
+    approved_characters_by_case: dict[str, list] = {}
     for path in case_paths:
         questionnaire = CharacterQuestionnaire.model_validate(
             json.loads(path.read_text(encoding="utf-8"))
         )
         started_at = perf_counter()
         try:
+            approved_roster = approved_characters_by_case.setdefault(questionnaire.case_id, [])
             run_output = await pipeline.run(
                 questionnaire,
                 world,
                 module,
                 ruleset,
+                existing_characters=approved_roster,
                 allow_repair=True,
             )
+            if run_output.final_review_report.status == ValidationStatus.PASS:
+                approved_roster.append(run_output.character)
             elapsed_ms = round((perf_counter() - started_at) * 1000, 3)
             results.append(
                 {
@@ -54,6 +59,8 @@ async def _main(
                     "player_id": questionnaire.player_id,
                     "status": run_output.final_review_report.status,
                     "review_result": run_output.final_review_report.review_result,
+                    "queue_position": run_output.final_review_report.queue_position,
+                    "roster_conflicts": run_output.final_review_report.roster_conflicts,
                     "repair_attempted": run_output.repair_attempted,
                     "repaired": run_output.repaired,
                     "elapsed_ms": elapsed_ms,

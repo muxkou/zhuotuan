@@ -22,6 +22,13 @@ def test_attribute_score_out_of_field_range_raises() -> None:
     else:
         raise AssertionError("expected ValidationError for out-of-range attribute field")
 
+    try:
+        AttributeScore(physique=-1, agility=0, mind=0, willpower=0, social=0)
+    except ValidationError:
+        pass
+    else:
+        raise AssertionError("expected ValidationError for negative attribute field")
+
 
 def test_validate_attributes_detects_budget_overflow() -> None:
     errors = validate_attributes(

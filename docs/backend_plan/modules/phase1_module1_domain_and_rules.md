@@ -179,6 +179,7 @@ class CharacterSheetSchema(BaseModel):
     personality_tags: list[str]
     module_motivation: str
     attributes: AttributeScore
+    extra_attributes: dict[str, int] = {}
     skills: SkillBonus
     strengths: list[str]
     weaknesses: list[str]
@@ -197,6 +198,7 @@ class CharacterSheetSchema(BaseModel):
    - `pollution_resistance`
    - `spirit_sensitivity`
 4. 世界也可以不增加特殊属性，只使用基础属性集。
+5. 属性数值强制不允许为负数，最低档应使用 `0` 表示。
 
 ### `TurnRecordSchema`
 
