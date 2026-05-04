@@ -5,6 +5,7 @@ from backend.app.application.services.response_normalizers import normalize_worl
 from backend.app.domain.enums.game import ArtifactSource
 from backend.app.domain.schemas.generation import QuickStartInput, WorldGenerationOutput
 from backend.app.domain.schemas.world import WorldSchema
+from backend.app.domain.value_objects.id_factory import generate_id
 from backend.app.infra.llm.llm_client import LLMClient
 
 
@@ -22,6 +23,8 @@ class WorldGenerationService:
             user_prompt=user_prompt,
             temperature=0.7,
         )
-        world = WorldSchema.model_validate(normalize_world_payload(raw_payload))
+        normalized = normalize_world_payload(raw_payload)
+        normalized["id"] = generate_id("world")
+        world = WorldSchema.model_validate(normalized)
         world = world.model_copy(update={"source": ArtifactSource.LLM})
         return WorldGenerationOutput(world=world, raw_text=raw_text)

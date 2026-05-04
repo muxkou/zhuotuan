@@ -1,6 +1,11 @@
 from collections.abc import Callable
 from typing import Any
 
+from backend.app.domain.schemas.world import (
+    default_character_creation_profile,
+    default_special_status_catalog,
+)
+
 
 def _stringify_item(item: Any) -> str:
     if isinstance(item, str):
@@ -33,6 +38,180 @@ def _normalize_string_list(value: Any) -> list[str]:
     return [_stringify_item(value)]
 
 
+def _attribute_key_from_label(label: str, index: int) -> str:
+    mapping = {
+        "体魄": "physique",
+        "体质": "physique",
+        "力量": "physique",
+        "机敏": "agility",
+        "灵巧": "agility",
+        "敏捷": "agility",
+        "心智": "mind",
+        "智力": "mind",
+        "洞察": "mind",
+        "意志": "willpower",
+        "精神": "willpower",
+        "社交": "social",
+        "魅力": "social",
+    }
+    stripped = label.strip()
+    return mapping.get(stripped, f"world_attr_{index}")
+
+
+def _default_character_creation_profile_payload() -> dict[str, Any]:
+    return default_character_creation_profile().model_dump(mode="json")
+
+
+def _default_special_status_catalog_payload() -> list[dict[str, Any]]:
+    return [
+        item.model_dump(mode="json")
+        for item in default_special_status_catalog()
+    ]
+
+
+def _attribute_definition_from_label(label: str, index: int, *, is_core: bool) -> dict[str, Any]:
+    key = _attribute_key_from_label(label, index)
+    return {
+        "key": key,
+        "label": label.strip() or f"世界属性{index + 1}",
+        "description": f"{label} 是当前世界车卡时可使用的属性。",
+        "min_value": 0,
+        "max_value": 3,
+        "semantic_bands": [
+            {"min_value": 0, "max_value": 0, "summary": f"{label}较弱。"},
+            {"min_value": 1, "max_value": 2, "summary": f"{label}正常。"},
+            {"min_value": 3, "max_value": 3, "summary": f"{label}突出。"},
+        ],
+        "is_core": is_core,
+    }
+
+
+def _normalize_character_creation_profile(value: Any, normalized: dict[str, Any]) -> dict[str, Any]:
+    default_profile = _default_character_creation_profile_payload()
+    if not isinstance(value, dict):
+        return default_profile
+
+    if isinstance(value.get("base_attributes"), list):
+        profile = dict(value)
+        profile.setdefault("world_specific_attributes", [])
+        profile.setdefault("total_attribute_budget_min", 0)
+        profile.setdefault("total_attribute_budget_max", 4)
+        profile.setdefault(
+            "identity_guidelines",
+            _normalize_string_list(normalized.get("recommended_roles", [])),
+        )
+        profile.setdefault(
+            "forbidden_character_elements",
+            default_profile["forbidden_character_elements"],
+        )
+        return profile
+
+    raw_attributes = (
+        value.get("属性")
+        or value.get("attributes")
+        or value.get("base_attributes")
+        or []
+    )
+    attribute_labels = _normalize_string_list(raw_attributes)
+    if attribute_labels:
+        base_attributes = [
+            _attribute_definition_from_label(label, index, is_core=True)
+            for index, label in enumerate(attribute_labels)
+        ]
+    else:
+        base_attributes = default_profile["base_attributes"]
+
+    special_labels = _normalize_string_list(
+        value.get("特色能力槽") or value.get("特殊属性") or []
+    )
+    world_specific_attributes = [
+        _attribute_definition_from_label(label, index, is_core=False)
+        for index, label in enumerate(special_labels)
+    ]
+
+    identity_guidelines = _normalize_string_list(normalized.get("recommended_roles", []))
+    equipment_guidelines = _normalize_string_list(value.get("初始装备") or [])
+    if equipment_guidelines:
+        identity_guidelines.extend(
+            f"建议初始装备：{item}"
+            for item in equipment_guidelines
+        )
+
+    return {
+        "base_attributes": base_attributes,
+        "world_specific_attributes": world_specific_attributes,
+        "total_attribute_budget_min": 0,
+        "total_attribute_budget_max": 4,
+        "identity_guidelines": identity_guidelines,
+        "forbidden_character_elements": default_profile["forbidden_character_elements"],
+    }
+
+
+def _normalize_special_status_catalog(value: Any) -> list[dict[str, Any]]:
+    if value is None:
+        return _default_special_status_catalog_payload()
+    if isinstance(value, list):
+        statuses: list[dict[str, Any]] = []
+        for index, item in enumerate(value):
+            if isinstance(item, dict):
+                label = (
+                    item.get("label")
+                    or item.get("name")
+                    or item.get("名称")
+                    or item.get("key")
+                    or f"特殊状态{index + 1}"
+                )
+                statuses.append(
+                    {
+                        "key": str(item.get("key") or f"status_{index + 1}"),
+                        "label": _stringify_item(label),
+                        "description": _stringify_item(
+                            item.get("description") or item.get("描述") or item
+                        ),
+                        "trigger_sources": _normalize_string_list(
+                            item.get("trigger_sources") or item.get("触发来源") or ["剧情触发"]
+                        ),
+                        "behavioral_constraints": _normalize_string_list(
+                            item.get("behavioral_constraints")
+                            or item.get("行为约束")
+                            or item.get("效果")
+                            or item
+                        ),
+                        "recovery_hints": _normalize_string_list(
+                            item.get("recovery_hints") or item.get("恢复提示") or []
+                        ),
+                    }
+                )
+            else:
+                label = _stringify_item(item)
+                statuses.append(
+                    {
+                        "key": f"status_{index + 1}",
+                        "label": label,
+                        "description": label,
+                        "trigger_sources": ["剧情触发"],
+                        "behavioral_constraints": [label],
+                        "recovery_hints": [],
+                    }
+                )
+        return statuses
+    if isinstance(value, dict):
+        statuses = []
+        for index, (label, description) in enumerate(value.items()):
+            statuses.append(
+                {
+                    "key": f"status_{index + 1}",
+                    "label": str(label),
+                    "description": _stringify_item(description),
+                    "trigger_sources": ["剧情触发"],
+                    "behavioral_constraints": _normalize_string_list(description),
+                    "recovery_hints": [],
+                }
+            )
+        return statuses
+    return _default_special_status_catalog_payload()
+
+
 def normalize_world_payload(payload: dict[str, Any]) -> dict[str, Any]:
     normalized = dict(payload)
     for key in (
@@ -55,88 +234,13 @@ def normalize_world_payload(payload: dict[str, Any]) -> dict[str, Any]:
             for key, value in narration_style.items()
         }
 
-    if "character_creation_profile" not in normalized:
-        normalized["character_creation_profile"] = {
-            "base_attributes": [
-                {
-                    "key": "physique",
-                    "label": "体魄",
-                    "description": "力量、耐力、负重、近身动作能力。",
-                    "min_value": 0,
-                    "max_value": 3,
-                    "semantic_bands": [
-                        {"min_value": 0, "max_value": 0, "summary": "体魄偏弱。"},
-                        {"min_value": 1, "max_value": 2, "summary": "体魄正常。"},
-                        {"min_value": 3, "max_value": 3, "summary": "体魄出众。"},
-                    ],
-                    "is_core": True,
-                },
-                {
-                    "key": "agility",
-                    "label": "机敏",
-                    "description": "反应、平衡、潜行与手上动作。",
-                    "min_value": 0,
-                    "max_value": 3,
-                    "semantic_bands": [
-                        {"min_value": 0, "max_value": 0, "summary": "动作偏慢。"},
-                        {"min_value": 1, "max_value": 2, "summary": "机敏正常。"},
-                        {"min_value": 3, "max_value": 3, "summary": "反应和动作非常灵活。"},
-                    ],
-                    "is_core": True,
-                },
-                {
-                    "key": "mind",
-                    "label": "心智",
-                    "description": "理解、推理、调查与知识整合。",
-                    "min_value": 0,
-                    "max_value": 3,
-                    "semantic_bands": [
-                        {"min_value": 0, "max_value": 0, "summary": "理解复杂信息比较吃力。"},
-                        {"min_value": 1, "max_value": 2, "summary": "思维能力正常。"},
-                        {"min_value": 3, "max_value": 3, "summary": "调查和推理能力非常强。"},
-                    ],
-                    "is_core": True,
-                },
-                {
-                    "key": "willpower",
-                    "label": "意志",
-                    "description": "抗压、忍耐、抵抗恐惧与诱惑。",
-                    "min_value": 0,
-                    "max_value": 3,
-                    "semantic_bands": [
-                        {"min_value": 0, "max_value": 0, "summary": "容易在压力下动摇。"},
-                        {"min_value": 1, "max_value": 2, "summary": "意志力正常。"},
-                        {"min_value": 3, "max_value": 3, "summary": "能在恐惧和压力中保持清醒。"},
-                    ],
-                    "is_core": True,
-                },
-                {
-                    "key": "social",
-                    "label": "社交",
-                    "description": "说服、共情、读人和建立关系。",
-                    "min_value": 0,
-                    "max_value": 3,
-                    "semantic_bands": [
-                        {"min_value": 0, "max_value": 0, "summary": "不善表达或读人。"},
-                        {"min_value": 1, "max_value": 2, "summary": "社交能力正常。"},
-                        {"min_value": 3, "max_value": 3, "summary": "在人际判断和影响上明显强势。"},
-                    ],
-                    "is_core": True,
-                },
-            ],
-            "world_specific_attributes": [],
-            "total_attribute_budget_min": 0,
-            "total_attribute_budget_max": 4,
-            "identity_guidelines": _normalize_string_list(normalized.get("recommended_roles", [])),
-            "forbidden_character_elements": [
-                "明确可控的强超自然能力",
-                "直接知道模组核心真相",
-                "完全拒绝与队友合作的人设",
-            ],
-        }
-
-    if "special_status_catalog" not in normalized:
-        normalized["special_status_catalog"] = []
+    normalized["character_creation_profile"] = _normalize_character_creation_profile(
+        normalized.get("character_creation_profile"),
+        normalized,
+    )
+    normalized["special_status_catalog"] = _normalize_special_status_catalog(
+        normalized.get("special_status_catalog")
+    )
     return normalized
 
 

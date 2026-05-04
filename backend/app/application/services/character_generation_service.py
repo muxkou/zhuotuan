@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 from backend.app.application.services.prompt_loader import load_prompt
 from backend.app.application.services.response_normalizers import normalize_character_payload
@@ -11,6 +12,7 @@ from backend.app.domain.schemas.generation import (
 from backend.app.domain.schemas.module import ModuleBlueprintSchema
 from backend.app.domain.schemas.ruleset import RuleSetSchema
 from backend.app.domain.schemas.world import WorldSchema
+from backend.app.domain.value_objects.id_factory import generate_id
 from backend.app.infra.llm.llm_client import LLMClient
 
 
@@ -22,14 +24,11 @@ class CharacterGenerationService:
 
     def _prepare_payload(
         self,
-        raw_payload: dict,
+        raw_payload: dict[str, Any],
         questionnaire: CharacterQuestionnaire,
     ) -> dict:
         normalized = normalize_character_payload(raw_payload)
-        normalized.setdefault(
-            "id",
-            f"char_{questionnaire.case_id}_{questionnaire.player_id}",
-        )
+        normalized["id"] = generate_id("char")
         normalized.setdefault("name", questionnaire.name_hint or questionnaire.player_id)
         normalized.setdefault("identity", questionnaire.identity_answer)
         normalized.setdefault("module_motivation", questionnaire.motivation_answer)

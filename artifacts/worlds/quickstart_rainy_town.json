@@ -1,56 +1,61 @@
 {
-  "id": "quickstart_rainy_town",
+  "id": "world_5e5209c63b06493c90eb96af279bede4",
   "version": "1.0",
-  "created_at": "2026-05-04T02:31:30.220875Z",
+  "created_at": "2026-05-04T03:42:55.101690Z",
   "source": "llm",
-  "name": "雨镇疑云",
-  "tagline": "暴雨中的古镇，隐藏着雨水的秘密",
+  "name": "雨镇迷踪",
+  "tagline": "暴雨笼罩的古镇，每一扇门后都藏着不愿醒来的梦魇。",
   "genre": "中式怪谈调查",
-  "era": "现代（但保留传统风貌）",
+  "era": "现代（笼罩着古老气息）",
   "tone": [
     "潮湿",
     "悬疑",
     "压抑"
   ],
   "public_rules": [
-    "暴雨季节，古镇的河流水位上涨，部分道路会被淹没",
-    "夜晚能见度极低，雨中容易迷失方向",
-    "镇民对某些地点讳莫如深，调查时可能遇到阻挠",
-    "失踪案与百年旧宅的传闻有关，线索会随时间或天气变化而消失或显现"
+    "雨镇常年降雨，雨水被认为连接阴阳两界，居民会在特定时辰关闭门窗。",
+    "调查者可使用‘灵视’能力短暂看到隐藏之物，但每次使用后需消耗一个‘镇魂香’恢复。",
+    "线索通过场景交互、NPC对话和物品调查获得，战斗极少发生且多为即时回避。",
+    "每完成一个主要调查事件，所有玩家进行一次‘理智检定’，失败则获得一个负面状态。",
+    "雨夜外出会有额外风险，但可能发现关键线索。"
   ],
   "hidden_rules": [
-    "雨水能暂时压制某些超自然气息，但也会激活古老的契约",
-    "每隔九年一次的大雨之夜，旧宅中的‘那位’会苏醒",
-    "玩家若在雨中长时间停留，可能被‘它’盯上",
-    "当地某个家族后裔的血可以提供保护或触发陷阱"
+    "雨水是‘忘川之水’的稀释，全身淋湿超过30分钟会开始丢失近期记忆（游戏时间每10分钟丢失一段）。",
+    "旧宅地下有一座古老祭坛，失踪者被某种存在拖入镜中空间，镜中人会模仿失踪者的声音和记忆。",
+    "玩家每在雨夜外出一次，理智上限永久降低1点（可通过特定仪式恢复）。",
+    "灵视看到的东西会被镜中存在‘记下’，下次进入室内镜子时会遭遇追猎。",
+    "NPC‘旧宅守护者’家族持有‘镇魂铜镜’，是其唯一可以对抗镜中人的道具。"
   ],
   "factions": [
-    "周氏宗族",
-    "镇公所",
-    "雨中客"
+    "分为接纳外来者的‘开明派’和怀疑逐客的‘固守派’。开明派会在雨天提供庇护，固守派会暗中阻碍调查。"
   ],
   "common_locations": [
-    "青石板主街（两侧是茶馆、杂货铺）",
-    "周氏旧宅（三层砖木结构，后院有枯井）",
-    "渡口码头（废弃的乌篷船）",
-    "雨神庙（半坍塌，供奉不知名神像）",
-    "镇档案馆（潮湿发霉，档案散乱）"
+    "古镇长街（潮湿青石路，檐下挂满红灯笼）",
+    "旧宅大宅（三层木结构，楼梯吱呀，每层都有镜子）",
+    "雨镇茶馆（居民聚集地，老板知道许多传闻）",
+    "废弃祠堂（牌位散落，供桌下有一口深井）",
+    "河边码头（停泊破船，夜间有哭声从水里传来）",
+    "老书店（老板是开明派，收藏地方志与手抄本）"
   ],
   "taboos": [
-    "子夜时分独自前往旧宅后院",
-    "在雨中直接触碰旧宅门环",
-    "对镇民提及‘雨夜新娘’的传说",
-    "擅自打开旧宅地下室的铁门"
+    "午夜后不得照镜子（会被镜中人标记）",
+    "不能接受陌生人递来的伞（伞是引魂器）",
+    "不得在旧宅内点燃明火（会唤醒镜中封印）",
+    "不要与他人谈论失踪者生前的梦境（梦会活过来）",
+    "不要在暴雨中呼喊逝者名字（会被雨水记住）"
   ],
   "recommended_roles": [
-    "记者（具有调查与社交能力）",
-    "退伍老兵（擅长野外生存与战斗，尽管战斗少）",
-    "民俗学者（能解读古老符号与地方习俗）"
+    "记者（擅长追问和记录）",
+    "民俗学者（了解禁忌与历史）",
+    "刑警（逻辑推理和搜证）",
+    "心理咨询师（能安抚NPC，辨识谎言）",
+    "古董商（识别灵物与假货）",
+    "灵媒（天生灵视强，但易被侵蚀）"
   ],
   "narration_style": {
     "horror_level": "medium",
-    "dialogue_style": "含蓄、方言点缀、留白，NPC说话多含潜台词",
-    "pacing": "缓慢推进，注重环境描写与心理压迫，关键线索在雨停后突然出现"
+    "dialogue_style": "沉稳中带有压抑感，角色间信任度较低，对白简洁、多留白，常用环境音和短句渲染气氛",
+    "pacing": "前30分钟线性铺垫（介绍环境和NPC），中间45分钟自由探索（触发核心事件），最后15分钟高潮收束（直面镜中人）。"
   },
   "character_creation_profile": {
     "base_attributes": [
@@ -58,26 +63,32 @@
         "key": "physique",
         "label": "体魄",
         "description": "力量、耐力、负重、近身动作能力。",
-        "min_value": -2,
+        "min_value": 0,
         "max_value": 3,
         "semantic_bands": [
           {
-            "min_value": -2,
-            "max_value": -1,
-            "summary": "体魄较弱。",
-            "examples": []
-          },
-          {
             "min_value": 0,
-            "max_value": 1,
-            "summary": "体魄正常。",
-            "examples": []
+            "max_value": 0,
+            "summary": "体魄偏弱，长时间奔跑、负重或对抗会非常困难。",
+            "examples": [
+              "在该维度明显吃力。"
+            ]
           },
           {
-            "min_value": 2,
+            "min_value": 1,
+            "max_value": 2,
+            "summary": "体魄正常，能应对普通人的常见体能挑战。",
+            "examples": [
+              "可以完成普通人的常规表现。"
+            ]
+          },
+          {
+            "min_value": 3,
             "max_value": 3,
-            "summary": "体魄出众。",
-            "examples": []
+            "summary": "体魄出众，近身对抗和耐力表现明显优于常人。",
+            "examples": [
+              "在这一维度属于非常突出。"
+            ]
           }
         ],
         "is_core": true
@@ -85,27 +96,33 @@
       {
         "key": "agility",
         "label": "机敏",
-        "description": "反应、平衡、潜行与手上动作。",
-        "min_value": -2,
+        "description": "反应、平衡、闪避、潜行、手上动作。",
+        "min_value": 0,
         "max_value": 3,
         "semantic_bands": [
           {
-            "min_value": -2,
-            "max_value": -1,
-            "summary": "动作笨拙。",
-            "examples": []
-          },
-          {
             "min_value": 0,
-            "max_value": 1,
-            "summary": "机敏正常。",
-            "examples": []
+            "max_value": 0,
+            "summary": "动作笨拙，反应偏慢，细致动作和闪避较难。",
+            "examples": [
+              "在该维度明显吃力。"
+            ]
           },
           {
-            "min_value": 2,
+            "min_value": 1,
+            "max_value": 2,
+            "summary": "机敏正常，可以处理普通移动与潜行动作。",
+            "examples": [
+              "可以完成普通人的常规表现。"
+            ]
+          },
+          {
+            "min_value": 3,
             "max_value": 3,
-            "summary": "反应和动作非常灵活。",
-            "examples": []
+            "summary": "机敏出众，适合潜行、闪避与细密动作。",
+            "examples": [
+              "在这一维度属于非常突出。"
+            ]
           }
         ],
         "is_core": true
@@ -113,27 +130,33 @@
       {
         "key": "mind",
         "label": "心智",
-        "description": "理解、推理、调查与知识整合。",
-        "min_value": -2,
+        "description": "理解力、推理、观察、调查、知识整合。",
+        "min_value": 0,
         "max_value": 3,
         "semantic_bands": [
           {
-            "min_value": -2,
-            "max_value": -1,
-            "summary": "理解复杂信息比较吃力。",
-            "examples": []
-          },
-          {
             "min_value": 0,
-            "max_value": 1,
-            "summary": "思维能力正常。",
-            "examples": []
+            "max_value": 0,
+            "summary": "理解复杂信息较慢，难以快速读懂隐含关系。",
+            "examples": [
+              "在该维度明显吃力。"
+            ]
           },
           {
-            "min_value": 2,
+            "min_value": 1,
+            "max_value": 2,
+            "summary": "能正常理解、分析并处理调查信息。",
+            "examples": [
+              "可以完成普通人的常规表现。"
+            ]
+          },
+          {
+            "min_value": 3,
             "max_value": 3,
-            "summary": "调查和推理能力非常强。",
-            "examples": []
+            "summary": "推理和洞察非常强，能快速抓住关键矛盾。",
+            "examples": [
+              "在这一维度属于非常突出。"
+            ]
           }
         ],
         "is_core": true
@@ -141,27 +164,33 @@
       {
         "key": "willpower",
         "label": "意志",
-        "description": "抗压、忍耐、抵抗恐惧与诱惑。",
-        "min_value": -2,
+        "description": "抗压、忍耐、抵抗恐惧、坚持目标。",
+        "min_value": 0,
         "max_value": 3,
         "semantic_bands": [
           {
-            "min_value": -2,
-            "max_value": -1,
-            "summary": "容易在压力下崩溃。",
-            "examples": []
-          },
-          {
             "min_value": 0,
-            "max_value": 1,
-            "summary": "意志力正常。",
-            "examples": []
+            "max_value": 0,
+            "summary": "容易在恐惧、痛苦或诱惑面前动摇。",
+            "examples": [
+              "在该维度明显吃力。"
+            ]
           },
           {
-            "min_value": 2,
+            "min_value": 1,
+            "max_value": 2,
+            "summary": "具备普通人的承压与坚持能力。",
+            "examples": [
+              "可以完成普通人的常规表现。"
+            ]
+          },
+          {
+            "min_value": 3,
             "max_value": 3,
-            "summary": "能在恐惧和压力中保持清醒。",
-            "examples": []
+            "summary": "在恐惧、迷惑和精神压迫下依然能保持清醒。",
+            "examples": [
+              "在这一维度属于非常突出。"
+            ]
           }
         ],
         "is_core": true
@@ -169,39 +198,48 @@
       {
         "key": "social",
         "label": "社交",
-        "description": "说服、共情、读人和建立关系。",
-        "min_value": -2,
+        "description": "说服、伪装、威吓、安抚、共情与人情判断。",
+        "min_value": 0,
         "max_value": 3,
         "semantic_bands": [
           {
-            "min_value": -2,
-            "max_value": -1,
-            "summary": "不善表达或读人。",
-            "examples": []
-          },
-          {
             "min_value": 0,
-            "max_value": 1,
-            "summary": "社交能力正常。",
-            "examples": []
+            "max_value": 0,
+            "summary": "不善表达或读人，交流中经常处于下风。",
+            "examples": [
+              "在该维度明显吃力。"
+            ]
           },
           {
-            "min_value": 2,
+            "min_value": 1,
+            "max_value": 2,
+            "summary": "社交能力正常，能完成常规沟通与劝说。",
+            "examples": [
+              "可以完成普通人的常规表现。"
+            ]
+          },
+          {
+            "min_value": 3,
             "max_value": 3,
-            "summary": "在人际判断和影响上明显强势。",
-            "examples": []
+            "summary": "在洞察人心、建立关系和影响他人上很有优势。",
+            "examples": [
+              "在这一维度属于非常突出。"
+            ]
           }
         ],
         "is_core": true
       }
     ],
     "world_specific_attributes": [],
-    "total_attribute_budget_min": -2,
+    "total_attribute_budget_min": 0,
     "total_attribute_budget_max": 4,
     "identity_guidelines": [
-      "记者（具有调查与社交能力）",
-      "退伍老兵（擅长野外生存与战斗，尽管战斗少）",
-      "民俗学者（能解读古老符号与地方习俗）"
+      "记者（擅长追问和记录）",
+      "民俗学者（了解禁忌与历史）",
+      "刑警（逻辑推理和搜证）",
+      "心理咨询师（能安抚NPC，辨识谎言）",
+      "古董商（识别灵物与假货）",
+      "灵媒（天生灵视强，但易被侵蚀）"
     ],
     "forbidden_character_elements": [
       "明确可控的强超自然能力",
@@ -209,5 +247,66 @@
       "完全拒绝与队友合作的人设"
     ]
   },
-  "special_status_catalog": []
+  "special_status_catalog": [
+    {
+      "key": "status_1",
+      "label": "雨水浸染",
+      "description": "淋雨超过1小时，灵感+1但理智-1，且每10分钟触发一次幻觉检定",
+      "trigger_sources": [
+        "剧情触发"
+      ],
+      "behavioral_constraints": [
+        "淋雨超过1小时，灵感+1但理智-1，且每10分钟触发一次幻觉检定"
+      ],
+      "recovery_hints": []
+    },
+    {
+      "key": "status_2",
+      "label": "镜中印记",
+      "description": "被镜中人标记后，每次进入室内镜子场景会强制进行一次理智检定，失败则被拖入镜像空间",
+      "trigger_sources": [
+        "剧情触发"
+      ],
+      "behavioral_constraints": [
+        "被镜中人标记后，每次进入室内镜子场景会强制进行一次理智检定，失败则被拖入镜像空间"
+      ],
+      "recovery_hints": []
+    },
+    {
+      "key": "status_3",
+      "label": "旧宅共鸣",
+      "description": "在旧宅特定房间（如地下室、阁楼）听到过去回声，获得线索但精神疲惫（下一次所有行动难度+1）",
+      "trigger_sources": [
+        "剧情触发"
+      ],
+      "behavioral_constraints": [
+        "在旧宅特定房间（如地下室、阁楼）听到过去回声，获得线索但精神疲惫（下一次所有行动难度+1）"
+      ],
+      "recovery_hints": []
+    },
+    {
+      "key": "status_4",
+      "label": "忘川迷雾",
+      "description": "淋雨时间过长导致记忆缺失，判定时随机遗忘一项关键线索（由主持人代为隐藏）",
+      "trigger_sources": [
+        "剧情触发"
+      ],
+      "behavioral_constraints": [
+        "淋雨时间过长导致记忆缺失，判定时随机遗忘一项关键线索（由主持人代为隐藏）"
+      ],
+      "recovery_hints": []
+    },
+    {
+      "key": "status_5",
+      "label": "镇魂庇护",
+      "description": "使用‘镇魂铜镜’后获得，在1次对抗镜中人时自动成功",
+      "trigger_sources": [
+        "剧情触发"
+      ],
+      "behavioral_constraints": [
+        "使用‘镇魂铜镜’后获得，在1次对抗镜中人时自动成功"
+      ],
+      "recovery_hints": []
+    }
+  ]
 }

@@ -87,7 +87,8 @@ def make_module() -> ModuleBlueprintSchema:
 async def test_world_generation_service_returns_valid_output() -> None:
     service = WorldGenerationService(llm_client=FakeLLMClient([make_world()]))
     result = await service.generate(make_quick_start())
-    assert result.world.id == "world_1"
+    assert result.world.id.startswith("world_")
+    assert result.world.id != "world_1"
     assert result.world.source == "llm"
 
 
@@ -95,7 +96,10 @@ async def test_module_generation_service_returns_valid_output() -> None:
     world = make_world()
     service = ModuleGenerationService(llm_client=FakeLLMClient([make_module()]))
     result = await service.generate(make_quick_start(), world)
+    assert result.module.id.startswith("module_")
     assert result.module.world_id == world.id
+    assert result.module.threat_clock_id.startswith("clock_")
+    assert all(clue.clue_id.startswith("clue_") for clue in result.module.key_clues)
     assert result.module.source == "llm"
 
 
