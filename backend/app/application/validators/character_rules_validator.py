@@ -4,7 +4,6 @@ from backend.app.domain.schemas.common import ErrorItem, ValidationReport
 from backend.app.domain.schemas.ruleset import (
     RuleSetSchema,
     validate_attributes,
-    validate_skill_budget,
 )
 
 
@@ -84,12 +83,11 @@ class CharacterRulesValidator:
             )
 
         hard_errors.extend(validate_attributes(character.attributes))
-        hard_errors.extend(validate_skill_budget(character.skills))
 
         total_attributes = sum(character.attributes.model_dump().values()) + sum(
             character.extra_attributes.values()
         )
-        total_skills = sum(character.skills.model_dump().values())
+        total_skills = sum(character.skills.values())
         if total_attributes <= 1:
             warnings.append(
                 ErrorItem(
@@ -103,24 +101,12 @@ class CharacterRulesValidator:
                     suggestion="shift one or two points into the character's core strengths",
                 )
             )
-        if total_skills == 0:
-            warnings.append(
-                ErrorItem(
-                    code="no_skill_specialization",
-                    message="the character has no highlighted skills",
-                    field_path="skills",
-                    severity="warning",
-                    suggestion="give the character at least one visible area of expertise",
-                )
-            )
-        maxed_skill_count = sum(
-            1 for value in character.skills.model_dump().values() if value >= 3
-        )
+        maxed_skill_count = sum(1 for value in character.skills.values() if value >= 2)
         if maxed_skill_count >= 3:
             warnings.append(
                 ErrorItem(
                     code="over_concentrated_skills",
-                    message="the character has too many maxed skills for the phase-1 baseline",
+                    message="the character has too many proficient skills for the phase-1 baseline",
                     field_path="skills",
                     severity="warning",
                     suggestion="lower one of the maxed skills or spread the focus more naturally",

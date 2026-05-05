@@ -4,6 +4,9 @@ from backend.app.application.services.character_generation_service import (
 from backend.app.application.services.character_review_pipeline import (
     CharacterReviewPipeline,
 )
+from backend.app.application.services.manual_character_card_service import (
+    ManualCharacterCardService,
+)
 from backend.app.application.validators.character_module_validator import (
     CharacterModuleValidator,
 )
@@ -16,7 +19,7 @@ from backend.app.application.validators.character_world_profile_validator import
 from backend.app.application.validators.character_world_validator import (
     CharacterWorldValidator,
 )
-from backend.app.domain.schemas.character import CharacterSheetSchema
+from backend.app.domain.schemas.character import CharacterSheetSchema, ManualCharacterCardInput
 from backend.app.domain.schemas.generation import CharacterQuestionnaire
 from backend.app.domain.schemas.module import ModuleBlueprintSchema
 from backend.app.domain.schemas.ruleset import RuleSetSchema
@@ -168,6 +171,7 @@ def make_world() -> WorldSchema:
             "total_attribute_budget_max": 5,
             "identity_guidelines": ["优先选择能自然介入调查的身份。"],
             "forbidden_character_elements": ["明确可控的强超自然能力"],
+            "total_skill_points": 6,
         },
     )
 
@@ -259,14 +263,14 @@ def test_character_rules_validator_flags_overpowered_sheet() -> None:
     character = make_character(
         attributes={"physique": 3, "agility": 3, "mind": 3, "willpower": 3, "social": 3},
         skills={
-            "investigation": 3,
-            "negotiation": 3,
-            "stealth": 3,
-            "combat": 3,
-            "medicine": 3,
-            "occult": 3,
-            "craft": 3,
-            "survival": 3,
+            "investigation": 2,
+            "negotiation": 2,
+            "stealth": 2,
+            "combat": 2,
+            "medicine": 2,
+            "occult": 2,
+            "craft": 2,
+            "survival": 2,
         },
     )
     report = CharacterRulesValidator().validate(character, make_ruleset())
@@ -292,6 +296,64 @@ def test_character_world_profile_validator_rejects_unknown_attribute() -> None:
     character = make_character(extra_attributes={"divinity": 2})
     report = CharacterWorldProfileValidator().validate(character, make_world())
     assert report.status == "fail"
+
+
+def test_character_world_profile_validator_rejects_unknown_skill() -> None:
+    character = make_character(skills={"dream_reading": 1})
+    report = CharacterWorldProfileValidator().validate(character, make_world())
+    assert report.status == "fail"
+
+
+def test_character_world_profile_validator_rejects_skill_budget_overflow() -> None:
+    character = make_character(
+        skills={
+            "investigation": 2,
+            "negotiation": 2,
+            "stealth": 2,
+            "combat": 2,
+        }
+    )
+    report = CharacterWorldProfileValidator().validate(character, make_world())
+    assert report.status == "fail"
+
+
+def test_manual_character_card_service_builds_reviewable_character() -> None:
+    manual_input = ManualCharacterCardInput(
+        case_id="case_001",
+        player_id="player_001",
+        name="陈砚",
+        identity="外地记者",
+        concept="为了调查妹妹旧案回到檀溪镇的年轻记者。",
+        personality_tags=["冷静", "执拗"],
+        module_motivation="失踪案线索和妹妹旧案重叠，我必须参与调查。",
+        attributes={
+            "physique": 0,
+            "agility": 1,
+            "mind": 2,
+            "willpower": 1,
+            "social": 0,
+            "spirit_sensitivity": 1,
+        },
+        skills={"investigation": 2, "occult": 1},
+        strengths=["善于从旧报道里找矛盾。"],
+        weaknesses=["一旦涉及妹妹就容易失去冷静。"],
+        fears=["害怕失踪案背后又是一场被默许的牺牲。"],
+        secret="我怀疑有人篡改过旧档案。",
+        relationships=[
+            {"target": "npc_doctor", "type": "旧识", "note": "曾帮过我。"}
+        ],
+        inventory=["记者证", "旧相机"],
+    )
+    character = ManualCharacterCardService().build_character(manual_input, make_world())
+    report = CharacterReviewPipeline().review(
+        character,
+        make_world(),
+        make_module(),
+        make_ruleset(),
+    )
+    assert character.id.startswith("char_")
+    assert character.extra_attributes == {"spirit_sensitivity": 1}
+    assert report.status in {"pass", "warn"}
 
 
 def test_character_module_validator_flags_spoiler_character() -> None:

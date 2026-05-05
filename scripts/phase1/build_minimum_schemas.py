@@ -3,7 +3,7 @@ from pathlib import Path
 from backend.app.domain.enums.game import ArtifactSource
 from backend.app.domain.schemas.character import CharacterSheetSchema
 from backend.app.domain.schemas.module import ClueLink, ModuleBlueprintSchema
-from backend.app.domain.schemas.ruleset import AttributeScore, RuleSetSchema, SkillBonus
+from backend.app.domain.schemas.ruleset import AttributeScore, RuleSetSchema
 from backend.app.domain.schemas.session import (
     CharacterRuntimeStateSchema,
     ClueStateSchema,
@@ -115,7 +115,7 @@ def main() -> None:
         personality_tags=["冷静", "执拗", "不轻信权威"],
         module_motivation="失踪学生寄来的信提到了妹妹当年也出现过的地点，我必须查清楚。",
         attributes=AttributeScore(physique=0, agility=1, mind=2, willpower=1, social=0),
-        skills=SkillBonus(investigation=2, negotiation=1, occult=1),
+        skills={"investigation": 2, "negotiation": 1, "occult": 1},
         strengths=["善于从细节中发现矛盾。"],
         weaknesses=["一旦涉及妹妹就会失去冷静。"],
         fears=["害怕发现妹妹早已死去。"],

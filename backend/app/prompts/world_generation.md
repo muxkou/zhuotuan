@@ -30,5 +30,8 @@
 - taboos
 - recommended_roles
 - narration_style
-- character_creation_profile
 - special_status_catalog
+
+注意：
+- 世界生成阶段可以省略 character_creation_profile，后端会用默认车卡规范兜底。
+- 不要在世界生成阶段展开技能列表；技能列表由后续“车卡规则生成”流程根据 world 单独生成。

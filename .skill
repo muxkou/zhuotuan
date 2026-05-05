@@ -1,0 +1,14 @@
+# Zhuotuan Backend Development Skill
+
+Use this project workflow when extending the backend:
+
+1. Read the relevant `docs/backend_plan/modules/*.md` file before editing code.
+2. Prefer script-first validation over API-first delivery; only wrap stable flows in FastAPI.
+3. Treat LLM output as untrusted: update prompt, normalizer, schema, validator and tests together.
+4. Generate ids in backend code, never rely on LLM-generated ids or generated artifacts as a fix.
+5. Do not patch test artifacts to hide generation bugs; fix prompt and post-processing instead.
+6. Keep world, module and character steps independently runnable and debuggable.
+7. For character cards, validate against world-defined attributes, world-defined skills and module roster constraints.
+8. Keep skills world-driven: values are `0=不会`, `1=会`, `2=精通`, and total points must fit the world budget.
+9. After behavior changes, update README commands and the relevant docs in the same change.
+10. Run unit tests first, then integration/golden tests when schemas or artifacts changed.

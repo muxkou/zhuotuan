@@ -40,6 +40,16 @@ class AttributeDefinition(BaseModel):
         return self
 
 
+class SkillDefinition(BaseModel):
+    """车卡时允许使用的一项技能定义。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    key: str = Field(description="技能英文 key，例如 investigation、folk_ritual。")
+    label: str = Field(description="技能显示名称。")
+    description: str = Field(description="技能含义说明，以及适合在什么场景使用。")
+
+
 class SpecialStatusDefinition(BaseModel):
     """世界中的特殊状态定义，供后续 AI KP 与运行时约束使用。"""
 
@@ -68,6 +78,23 @@ class CharacterCreationProfile(BaseModel):
     )
     total_attribute_budget_min: int = Field(ge=0, description="角色总属性点允许的最小预算。")
     total_attribute_budget_max: int = Field(ge=0, description="角色总属性点允许的最大预算。")
+    skills: list[SkillDefinition] = Field(
+        default_factory=list,
+        description="当前世界允许玩家车卡时选择的技能列表。",
+    )
+    total_skill_points: int = Field(
+        default=6,
+        ge=0,
+        description="角色创建时可分配的技能点总量。",
+    )
+    skill_level_descriptions: dict[str, str] = Field(
+        default_factory=lambda: {
+            "0": "不会：没有稳定训练或经验，通常只能尝试非常基础的行动。",
+            "1": "会：具备基础训练或经验，可以完成常规难度行动。",
+            "2": "精通：在该技能上有明显优势，可承担关键行动。",
+        },
+        description="技能数值 0/1/2 对应的语义说明。",
+    )
     identity_guidelines: list[str] = Field(
         default_factory=list,
         description="推荐的身份与人设方向说明。",
@@ -80,6 +107,20 @@ class CharacterCreationProfile(BaseModel):
     @property
     def all_attributes(self) -> list[AttributeDefinition]:
         return [*self.base_attributes, *self.world_specific_attributes]
+
+    @model_validator(mode="after")
+    def validate_creation_profile(self) -> "CharacterCreationProfile":
+        if not self.skills:
+            self.skills = _default_skill_definitions()
+        if self.total_attribute_budget_min > self.total_attribute_budget_max:
+            raise ValueError("total_attribute_budget_min cannot exceed max")
+        skill_keys = [skill.key for skill in self.skills]
+        if len(skill_keys) != len(set(skill_keys)):
+            raise ValueError("skill keys must be unique")
+        required_levels = {"0", "1", "2"}
+        if not required_levels.issubset(self.skill_level_descriptions):
+            raise ValueError("skill_level_descriptions must include 0, 1 and 2")
+        return self
 
 
 def _base_attribute_definition(
@@ -118,6 +159,51 @@ def _base_attribute_definition(
         ],
         is_core=True,
     )
+
+
+def _default_skill_definitions() -> list[SkillDefinition]:
+    return [
+        SkillDefinition(
+            key="investigation",
+            label="调查",
+            description="搜索线索、询问细节、辨认矛盾和追踪事实。",
+        ),
+        SkillDefinition(
+            key="negotiation",
+            label="交涉",
+            description="说服、安抚、威慑、套话或处理人际冲突。",
+        ),
+        SkillDefinition(
+            key="stealth",
+            label="潜行",
+            description="隐藏行踪、避开注意、悄悄接近或脱离危险。",
+        ),
+        SkillDefinition(
+            key="combat",
+            label="战斗",
+            description="近身对抗、保护同伴、解除普通武力威胁。",
+        ),
+        SkillDefinition(
+            key="medicine",
+            label="医治",
+            description="急救、判断伤势、处理药物或生理异常。",
+        ),
+        SkillDefinition(
+            key="occult",
+            label="民俗",
+            description="识别民俗禁忌、仪式痕迹、怪谈传承和异常象征。",
+        ),
+        SkillDefinition(
+            key="craft",
+            label="技艺",
+            description="修理、制作、开锁、使用工具或处理机关。",
+        ),
+        SkillDefinition(
+            key="survival",
+            label="生存",
+            description="野外行动、辨认环境风险、寻找路径和应急资源。",
+        ),
+    ]
 
 
 def default_character_creation_profile() -> CharacterCreationProfile:
@@ -166,6 +252,8 @@ def default_character_creation_profile() -> CharacterCreationProfile:
         ],
         total_attribute_budget_min=0,
         total_attribute_budget_max=4,
+        skills=_default_skill_definitions(),
+        total_skill_points=6,
         identity_guidelines=[
             "优先选择能自然卷入调查、求助、护送、追凶、守秘的普通人身份。",
             "角色应保留缺点和代价，不建议直接写成全能英雄或超能力者。",

@@ -8,11 +8,17 @@ from backend.app.domain.schemas.generation import QuickStartInput
 from backend.app.domain.schemas.world import WorldSchema
 
 
-async def _main(input_path: Path, world_path: Path, output_path: Path) -> None:
+async def _main(
+    input_path: Path,
+    world_path: Path,
+    output_path: Path,
+    *,
+    allow_repair: bool,
+) -> None:
     quick_start = QuickStartInput.model_validate(json.loads(input_path.read_text(encoding="utf-8")))
     world = WorldSchema.model_validate(json.loads(world_path.read_text(encoding="utf-8")))
     pipeline = ModuleGenerationPipeline()
-    result = await pipeline.run(quick_start, world, allow_repair=True)
+    result = await pipeline.run(quick_start, world, allow_repair=allow_repair)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(result.module.model_dump_json(indent=2), encoding="utf-8")
 
@@ -25,8 +31,20 @@ def main() -> None:
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--world", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument(
+        "--no-repair",
+        action="store_true",
+        help="只生成并校验初稿，不触发 repair pass。",
+    )
     args = parser.parse_args()
-    asyncio.run(_main(args.input, args.world, args.output))
+    asyncio.run(
+        _main(
+            args.input,
+            args.world,
+            args.output,
+            allow_repair=not args.no_repair,
+        )
+    )
 
 
 if __name__ == "__main__":

@@ -1,3 +1,4 @@
+import asyncio
 import json
 import re
 from dataclasses import dataclass
@@ -17,6 +18,10 @@ class LLMConfigurationError(RuntimeError):
 
 class LLMResponseError(RuntimeError):
     """LLM 返回内容无法使用时抛出的错误。"""
+
+
+class LLMRequestError(RuntimeError):
+    """LLM 请求失败且重试耗尽时抛出的错误。"""
 
 
 @dataclass(slots=True)
@@ -70,12 +75,7 @@ class LLMClient:
             close_client = True
 
         try:
-            response = await client.post(
-                self.settings.llm_chat_completions_path,
-                headers=headers,
-                json=payload,
-            )
-            response.raise_for_status()
+            response = await self._post_with_retries(client, headers, payload)
             raw = response.json()
             content = raw["choices"][0]["message"]["content"]
             if not isinstance(content, str) or not content.strip():
@@ -84,6 +84,32 @@ class LLMClient:
         finally:
             if close_client:
                 await client.aclose()
+
+    async def _post_with_retries(
+        self,
+        client: httpx.AsyncClient,
+        headers: dict[str, str],
+        payload: dict[str, Any],
+    ) -> httpx.Response:
+        attempts = self.settings.llm_max_retries + 1
+        last_error: Exception | None = None
+        for attempt in range(1, attempts + 1):
+            try:
+                response = await client.post(
+                    self.settings.llm_chat_completions_path,
+                    headers=headers,
+                    json=payload,
+                )
+                response.raise_for_status()
+                return response
+            except (httpx.TimeoutException, httpx.TransportError, httpx.HTTPStatusError) as exc:
+                last_error = exc
+                if attempt >= attempts:
+                    break
+                await asyncio.sleep(self.settings.llm_retry_backoff_seconds * attempt)
+        raise LLMRequestError(
+            f"LLM request failed after {attempts} attempt(s): {last_error}"
+        ) from last_error
 
     async def generate_structured(
         self,

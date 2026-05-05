@@ -10,6 +10,7 @@
 
 ```text
 backend/app/application/services/character_generation_service.py
+backend/app/application/services/manual_character_card_service.py
 backend/app/application/services/character_roster_review_service.py
 backend/app/application/validators/character_rules_validator.py
 backend/app/application/validators/character_world_profile_validator.py
@@ -34,6 +35,23 @@ class CharacterQuestionnaire(BaseModel):
     fear_answer: str
     relationship_answer: str | None = None
     secret_answer: str | None = None
+
+class ManualCharacterCardInput(BaseModel):
+    case_id: str
+    player_id: str
+    name: str
+    identity: str
+    concept: str
+    personality_tags: list[str]
+    module_motivation: str
+    attributes: dict[str, int]
+    skills: dict[str, int]
+    strengths: list[str]
+    weaknesses: list[str]
+    fears: list[str]
+    secret: str | None = None
+    relationships: list[dict[str, str]]
+    inventory: list[str]
 ```
 
 附加输入：
@@ -81,6 +99,13 @@ class CharacterReviewPipeline:
         ruleset: RuleSetSchema,
         existing_characters: list[CharacterSheetSchema] = [],
     ) -> CharacterReviewReport: ...
+
+class ManualCharacterCardService:
+    def build_character(
+        self,
+        manual_input: ManualCharacterCardInput,
+        world: WorldSchema,
+    ) -> CharacterSheetSchema: ...
 ```
 
 审核顺序：
@@ -107,9 +132,8 @@ class CharacterReviewPipeline:
 
 1. `scripts/phase1/generate_character_draft.py`
 2. `scripts/phase1/review_character_sheet.py`
-3. `scripts/phase1/review_character_roster_queue.py`
-4. `scripts/eval/eval_character_review.py`
-5. `scripts/perf/perf_character_pipeline.py`
+3. `scripts/phase1/review_manual_character_card.py`
+4. `scripts/phase1/review_character_roster_queue.py`
 
 示例：
 
@@ -119,6 +143,13 @@ uv run python scripts/phase1/review_character_sheet.py \
   --world artifacts/worlds/rainy_town_world.json \
   --module artifacts/modules/rainy_town_module.json \
   --output artifacts/characters/reporter_review.json
+
+uv run python scripts/phase1/review_manual_character_card.py \
+  --input artifacts/characters/reporter_manual_card.json \
+  --world artifacts/worlds/rainy_town_world.json \
+  --profile artifacts/worlds/rainy_town_character_profile.json \
+  --module artifacts/modules/rainy_town_module.json \
+  --output artifacts/characters/reporter_manual_review.json
 ```
 
 ---
@@ -128,7 +159,6 @@ uv run python scripts/phase1/review_character_sheet.py \
 ### 规则审核
 
 - 属性点总额是否超限
-- 技能点总额是否超限
 - 必填字段是否缺失
 
 ### 世界车卡约束审核
@@ -136,17 +166,17 @@ uv run python scripts/phase1/review_character_sheet.py \
 - 角色属性是否全部出自世界允许的属性定义
 - 每个属性是否落在该世界定义的取值范围内
 - 特殊属性是否被正确识别
+- 角色技能是否全部来自世界技能表
+- 技能值是否固定为 `0/1/2`
+- 技能点总额是否超过世界 `total_skill_points`
 - 角色描述是否与世界给定的属性语义相匹配
 - 是否使用了世界禁止的车卡元素
 
 说明：
 
-1. 本版本技能不要求由世界或模组预定义。
-2. 但技能仍要做合理性审核，例如：
-   - 技能总量是否超限
-   - 是否过度集中导致失衡
-   - 是否出现明显不适合当前阶段的超模组合
-3. 技能合理性由角色审核逻辑负责，不进入 `WorldSchema.character_creation_profile`
+1. 技能由 `WorldSchema.character_creation_profile.skills` 定义。
+2. 玩家手动填写车卡时，必须提交结构化 `attributes` 和 `skills`。
+3. 手动车卡与 LLM 生成角色共用同一套审核 pipeline。
 
 ### 世界观审核
 
@@ -168,8 +198,8 @@ uv run python scripts/phase1/review_character_sheet.py \
 
 - `artifacts/characters/<case_id>_draft.json`
 - `artifacts/characters/<case_id>_review.json`
+- `artifacts/characters/<case_id>_manual_review.json`
 - `artifacts/characters/<case_id>_roster_review.json`
-- `artifacts/evals/character_batch_summary.json`
 
 ---
 
@@ -199,4 +229,4 @@ uv run python scripts/phase1/review_character_sheet.py \
 2. 审核结果包含 `approved/needs_revision/warning/enhance`
 3. 错误角色识别召回率 >= 85%
 4. 顺序审核时可稳定考虑前序角色上下文
-5. 单角色全链路 P95 < 8s
+5. 手动车卡输入可以不经 LLM 生成，直接进入审核链路

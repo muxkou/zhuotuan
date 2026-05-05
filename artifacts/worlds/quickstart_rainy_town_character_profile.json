@@ -1,0 +1,234 @@
+{
+  "base_attributes": [
+    {
+      "key": "physique",
+      "label": "体魄",
+      "description": "力量、耐力、负重、近身动作能力。",
+      "min_value": 0,
+      "max_value": 3,
+      "semantic_bands": [
+        {
+          "min_value": 0,
+          "max_value": 0,
+          "summary": "体魄偏弱，长时间奔跑、负重或对抗会非常困难。",
+          "examples": [
+            "在该维度明显吃力。"
+          ]
+        },
+        {
+          "min_value": 1,
+          "max_value": 2,
+          "summary": "体魄正常，能应对普通人的常见体能挑战。",
+          "examples": [
+            "可以完成普通人的常规表现。"
+          ]
+        },
+        {
+          "min_value": 3,
+          "max_value": 3,
+          "summary": "体魄出众，近身对抗和耐力表现明显优于常人。",
+          "examples": [
+            "在这一维度属于非常突出。"
+          ]
+        }
+      ],
+      "is_core": true
+    },
+    {
+      "key": "agility",
+      "label": "机敏",
+      "description": "反应、平衡、闪避、潜行、手上动作。",
+      "min_value": 0,
+      "max_value": 3,
+      "semantic_bands": [
+        {
+          "min_value": 0,
+          "max_value": 0,
+          "summary": "动作笨拙，反应偏慢，细致动作和闪避较难。",
+          "examples": [
+            "在该维度明显吃力。"
+          ]
+        },
+        {
+          "min_value": 1,
+          "max_value": 2,
+          "summary": "机敏正常，可以处理普通移动与潜行动作。",
+          "examples": [
+            "可以完成普通人的常规表现。"
+          ]
+        },
+        {
+          "min_value": 3,
+          "max_value": 3,
+          "summary": "机敏出众，适合潜行、闪避与细密动作。",
+          "examples": [
+            "在这一维度属于非常突出。"
+          ]
+        }
+      ],
+      "is_core": true
+    },
+    {
+      "key": "mind",
+      "label": "心智",
+      "description": "理解力、推理、观察、调查、知识整合。",
+      "min_value": 0,
+      "max_value": 3,
+      "semantic_bands": [
+        {
+          "min_value": 0,
+          "max_value": 0,
+          "summary": "理解复杂信息较慢，难以快速读懂隐含关系。",
+          "examples": [
+            "在该维度明显吃力。"
+          ]
+        },
+        {
+          "min_value": 1,
+          "max_value": 2,
+          "summary": "能正常理解、分析并处理调查信息。",
+          "examples": [
+            "可以完成普通人的常规表现。"
+          ]
+        },
+        {
+          "min_value": 3,
+          "max_value": 3,
+          "summary": "推理和洞察非常强，能快速抓住关键矛盾。",
+          "examples": [
+            "在这一维度属于非常突出。"
+          ]
+        }
+      ],
+      "is_core": true
+    },
+    {
+      "key": "willpower",
+      "label": "意志",
+      "description": "抗压、忍耐、抵抗恐惧、坚持目标。",
+      "min_value": 0,
+      "max_value": 3,
+      "semantic_bands": [
+        {
+          "min_value": 0,
+          "max_value": 0,
+          "summary": "容易在恐惧、痛苦或诱惑面前动摇。",
+          "examples": [
+            "在该维度明显吃力。"
+          ]
+        },
+        {
+          "min_value": 1,
+          "max_value": 2,
+          "summary": "具备普通人的承压与坚持能力。",
+          "examples": [
+            "可以完成普通人的常规表现。"
+          ]
+        },
+        {
+          "min_value": 3,
+          "max_value": 3,
+          "summary": "在恐惧、迷惑和精神压迫下依然能保持清醒。",
+          "examples": [
+            "在这一维度属于非常突出。"
+          ]
+        }
+      ],
+      "is_core": true
+    },
+    {
+      "key": "social",
+      "label": "社交",
+      "description": "说服、伪装、威吓、安抚、共情与人情判断。",
+      "min_value": 0,
+      "max_value": 3,
+      "semantic_bands": [
+        {
+          "min_value": 0,
+          "max_value": 0,
+          "summary": "不善表达或读人，交流中经常处于下风。",
+          "examples": [
+            "在该维度明显吃力。"
+          ]
+        },
+        {
+          "min_value": 1,
+          "max_value": 2,
+          "summary": "社交能力正常，能完成常规沟通与劝说。",
+          "examples": [
+            "可以完成普通人的常规表现。"
+          ]
+        },
+        {
+          "min_value": 3,
+          "max_value": 3,
+          "summary": "在洞察人心、建立关系和影响他人上很有优势。",
+          "examples": [
+            "在这一维度属于非常突出。"
+          ]
+        }
+      ],
+      "is_core": true
+    }
+  ],
+  "world_specific_attributes": [],
+  "total_attribute_budget_min": 0,
+  "total_attribute_budget_max": 4,
+  "skills": [
+    {
+      "key": "investigation",
+      "label": "调查",
+      "description": "搜索线索、询问细节、辨认矛盾和追踪事实。"
+    },
+    {
+      "key": "negotiation",
+      "label": "交涉",
+      "description": "说服、安抚、威慑、套话或处理人际冲突。"
+    },
+    {
+      "key": "stealth",
+      "label": "潜行",
+      "description": "隐藏行踪、避开注意、悄悄接近或脱离危险。"
+    },
+    {
+      "key": "combat",
+      "label": "战斗",
+      "description": "近身对抗、保护同伴、解除普通武力威胁。"
+    },
+    {
+      "key": "medicine",
+      "label": "医治",
+      "description": "急救、判断伤势、处理药物或生理异常。"
+    },
+    {
+      "key": "occult",
+      "label": "民俗",
+      "description": "识别民俗禁忌、仪式痕迹、怪谈传承和异常象征。"
+    },
+    {
+      "key": "craft",
+      "label": "技艺",
+      "description": "修理、制作、开锁、使用工具或处理机关。"
+    },
+    {
+      "key": "survival",
+      "label": "生存",
+      "description": "野外行动、辨认环境风险、寻找路径和应急资源。"
+    }
+  ],
+  "total_skill_points": 6,
+  "skill_level_descriptions": {
+    "0": "不会：没有稳定训练或经验，通常只能尝试非常基础的行动。",
+    "1": "会：具备基础训练或经验，可以完成常规难度行动。",
+    "2": "精通：在该技能上有明显优势，可承担关键行动。"
+  },
+  "identity_guidelines": [
+    "优先选择能自然卷入调查、求助、护送、追凶、守秘的普通人身份。",
+    "角色应保留缺点和代价，不建议直接写成全能英雄或超能力者。"
+  ],
+  "forbidden_character_elements": [
+    "明确可控的强超自然能力",
+    "直接知道模组核心真相",
+    "完全拒绝与队友合作的人设"
+  ]
+}

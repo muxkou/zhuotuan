@@ -12,10 +12,12 @@
 
 ```text
 backend/app/application/services/world_generation_service.py
+backend/app/application/services/character_creation_profile_generation_service.py
 backend/app/application/services/module_generation_service.py
 backend/app/application/validators/module_playability_validator.py
 backend/app/infra/llm/llm_client.py
 backend/app/prompts/world_generation.md
+backend/app/prompts/character_creation_profile_generation.md
 backend/app/prompts/module_generation.md
 backend/app/prompts/module_repair.md
 ```
@@ -44,6 +46,7 @@ class QuickStartInput(BaseModel):
 输出对象：
 
 - `WorldSchema`
+- `CharacterCreationProfile`
 - `ModuleBlueprintSchema`
 
 校验报告：
@@ -63,6 +66,9 @@ class ModulePlayabilityReport(ValidationReport):
 class WorldGenerationService:
     async def generate(self, quick_start: QuickStartInput) -> WorldSchema: ...
 
+class CharacterCreationProfileGenerationService:
+    async def generate(self, world: WorldSchema) -> CharacterCreationProfile: ...
+
 class ModuleGenerationService:
     async def generate(self, quick_start: QuickStartInput, world: WorldSchema) -> ModuleBlueprintSchema: ...
 
@@ -72,10 +78,10 @@ class ModulePlayabilityValidator:
 
 要求：
 
-1. 先生成 world，再生成 module。
+1. 先生成 world，再根据 world 单独生成车卡规则，再生成 module。
 2. 生成结果必须通过 schema 校验。
 3. `fail` 时允许一次 repair pass。
-4. 生成出的世界必须包含可供车卡阶段使用的 `character_creation_profile`。
+4. world 生成阶段可用默认 `character_creation_profile` 兜底；正式角色审核前应运行车卡规则生成脚本。
 5. 生成出的世界必须给出 `special_status_catalog`，可以为空，但字段必须存在。
 6. 生成出的模组必须明确 `player_count_min` / `player_count_max`，供后续房间角色审核使用。
 
@@ -84,10 +90,9 @@ class ModulePlayabilityValidator:
 ## 6. 建议脚本
 
 1. `scripts/phase1/generate_world_draft.py`
-2. `scripts/phase1/generate_module_draft.py`
-3. `scripts/phase1/validate_module_playability.py`
-4. `scripts/eval/eval_world_module_batch.py`
-5. `scripts/perf/perf_world_module_generation.py`
+2. `scripts/phase1/generate_character_creation_profile.py`
+3. `scripts/phase1/generate_module_draft.py`
+4. `scripts/phase1/validate_module_playability.py`
 
 示例：
 
@@ -95,6 +100,11 @@ class ModulePlayabilityValidator:
 uv run python scripts/phase1/generate_world_draft.py \
   --input artifacts/cases/quickstart_rainy_town.json \
   --output artifacts/worlds/rainy_town_world.json
+
+uv run python scripts/phase1/generate_character_creation_profile.py \
+  --world artifacts/worlds/rainy_town_world.json \
+  --output artifacts/worlds/rainy_town_character_profile.json \
+  --merged-world-output artifacts/worlds/rainy_town_world_with_profile.json
 ```
 
 ---
@@ -105,20 +115,23 @@ uv run python scripts/phase1/generate_world_draft.py \
 2. 字段名与 schema 对齐
 3. 不允许额外字段
 4. 核心秘密、线索、结局必须显式存在
-5. 世界内必须显式给出：
+5. 世界生成 prompt 不要求一次性完成技能表；技能表由车卡规则生成 prompt 单独完成。
+6. 车卡规则生成必须显式给出：
    - 基础属性定义
    - 属性取值范围
    - 属性分段语义说明
-   - 特殊状态目录
+   - 技能列表
+   - 技能点总量
+   - 技能值 `0/1/2` 的语义说明
 
 ---
 
 ## 8. 产出
 
 - `artifacts/worlds/<case_id>.json`
+- `artifacts/worlds/<case_id>_character_profile.json`
 - `artifacts/modules/<case_id>.json`
 - `artifacts/evals/module_validation_<case_id>.json`
-- `artifacts/evals/world_module_batch_summary.json`
 
 ---
 
@@ -143,5 +156,4 @@ uv run python scripts/phase1/generate_world_draft.py \
 1. 10 组输入里至少 9 组生成结构完整 world/module
 2. 至少 80% 模组满足“3 条关键线索指向真相”
 3. 校验器可输出 `pass/warn/fail`
-4. 至少 90% 世界包含可被角色审核链路直接消费的 `character_creation_profile`
-5. 单次完整链路 P95 < 12s
+4. 车卡规则脚本输出可被角色审核链路直接消费的 `character_creation_profile`

@@ -63,16 +63,6 @@ class AttributeScore(BaseModel):
     willpower: int
     social: int
 
-class SkillBonus(BaseModel):
-    investigation: int = 0
-    negotiation: int = 0
-    stealth: int = 0
-    combat: int = 0
-    medicine: int = 0
-    occult: int = 0
-    craft: int = 0
-    survival: int = 0
-
 class RuleSetSchema(BaseModel):
     id: str
     version: str
@@ -103,6 +93,11 @@ class AttributeDefinition(BaseModel):
     semantic_bands: list[AttributeSemanticBand]
     is_core: bool = True
 
+class SkillDefinition(BaseModel):
+    key: str
+    label: str
+    description: str
+
 class SpecialStatusDefinition(BaseModel):
     key: str
     label: str
@@ -116,6 +111,9 @@ class CharacterCreationProfile(BaseModel):
     world_specific_attributes: list[AttributeDefinition] = []
     total_attribute_budget_min: int
     total_attribute_budget_max: int
+    skills: list[SkillDefinition]
+    total_skill_points: int
+    skill_level_descriptions: dict[str, str]
     identity_guidelines: list[str]
     forbidden_character_elements: list[str] = []
 
@@ -180,7 +178,7 @@ class CharacterSheetSchema(BaseModel):
     module_motivation: str
     attributes: AttributeScore
     extra_attributes: dict[str, int] = {}
-    skills: SkillBonus
+    skills: dict[str, int]
     strengths: list[str]
     weaknesses: list[str]
     fears: list[str]
@@ -199,6 +197,12 @@ class CharacterSheetSchema(BaseModel):
    - `spirit_sensitivity`
 4. 世界也可以不增加特殊属性，只使用基础属性集。
 5. 属性数值强制不允许为负数，最低档应使用 `0` 表示。
+6. 技能由 `WorldSchema.character_creation_profile.skills` 定义，不再固定在 `SkillBonus`。
+7. 技能值强制为 `0/1/2`：
+   - `0`：不会
+   - `1`：会
+   - `2`：精通
+8. 技能点总量由 `total_skill_points` 约束，默认 6。
 
 ### `TurnRecordSchema`
 
@@ -229,7 +233,7 @@ def validate_attributes_against_world(
     attrs: dict[str, int],
     world_profile: CharacterCreationProfile,
 ) -> list[ErrorItem]: ...
-def validate_skill_budget(skills: SkillBonus) -> list[ErrorItem]: ...
+def validate_skill_budget(skills: dict[str, int]) -> list[ErrorItem]: ...
 def roll_2d6(seed: int | None = None) -> tuple[int, list[int]]: ...
 def compute_check_total(base_roll: int, attribute_mod: int, skill_mod: int) -> int: ...
 def grade_check_result(total: int, difficulty: int) -> str: ...

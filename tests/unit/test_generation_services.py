@@ -1,3 +1,6 @@
+from backend.app.application.services.character_creation_profile_generation_service import (
+    CharacterCreationProfileGenerationService,
+)
 from backend.app.application.services.module_generation_pipeline import ModuleGenerationPipeline
 from backend.app.application.services.module_generation_service import ModuleGenerationService
 from backend.app.application.services.world_generation_service import WorldGenerationService
@@ -92,6 +95,27 @@ async def test_world_generation_service_returns_valid_output() -> None:
     assert result.world.id.startswith("world_")
     assert result.world.id != "world_1"
     assert result.world.source == "llm"
+
+
+async def test_character_creation_profile_generation_service_normalizes_old_payload() -> None:
+    service = CharacterCreationProfileGenerationService(
+        llm_client=FakeLLMClient(
+            [
+                {
+                    "属性": ["体魄", "机敏", "心智", "意志", "社交"],
+                    "技能": ["调查", "交涉", "民俗"],
+                    "总技能点": 5,
+                }
+            ]
+        )
+    )
+    result = await service.generate(make_world())
+    assert [skill.key for skill in result.profile.skills] == [
+        "investigation",
+        "negotiation",
+        "occult",
+    ]
+    assert result.profile.total_skill_points == 5
 
 
 async def test_module_generation_service_returns_valid_output() -> None:

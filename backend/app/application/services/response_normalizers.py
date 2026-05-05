@@ -86,8 +86,61 @@ def _attribute_definition_from_label(label: str, index: int, *, is_core: bool) -
     }
 
 
-def _normalize_character_creation_profile(value: Any, normalized: dict[str, Any]) -> dict[str, Any]:
+def _skill_key_from_label(label: str, index: int) -> str:
+    mapping = {
+        "调查": "investigation",
+        "侦查": "investigation",
+        "交涉": "negotiation",
+        "说服": "negotiation",
+        "潜行": "stealth",
+        "隐匿": "stealth",
+        "战斗": "combat",
+        "格斗": "combat",
+        "医治": "medicine",
+        "医疗": "medicine",
+        "民俗": "occult",
+        "神秘学": "occult",
+        "技艺": "craft",
+        "手工": "craft",
+        "生存": "survival",
+    }
+    stripped = label.strip()
+    return mapping.get(stripped, f"world_skill_{index + 1}")
+
+
+def _normalize_skill_definition(item: Any, index: int) -> dict[str, str]:
+    if isinstance(item, dict):
+        label = _stringify_item(
+            item.get("label")
+            or item.get("name")
+            or item.get("名称")
+            or item.get("key")
+            or f"世界技能{index + 1}"
+        )
+        key = str(item.get("key") or _skill_key_from_label(label, index)).strip()
+        return {
+            "key": key or f"world_skill_{index + 1}",
+            "label": label,
+            "description": _stringify_item(
+                item.get("description")
+                or item.get("描述")
+                or f"{label} 是当前世界车卡时可选择的技能。"
+            ),
+        }
+    label = _stringify_item(item)
+    return {
+        "key": _skill_key_from_label(label, index),
+        "label": label,
+        "description": f"{label} 是当前世界车卡时可选择的技能。",
+    }
+
+
+def normalize_character_creation_profile_payload(
+    value: Any,
+    normalized: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     default_profile = _default_character_creation_profile_payload()
+    normalized = normalized or {}
     if not isinstance(value, dict):
         return default_profile
 
@@ -96,6 +149,12 @@ def _normalize_character_creation_profile(value: Any, normalized: dict[str, Any]
         profile.setdefault("world_specific_attributes", [])
         profile.setdefault("total_attribute_budget_min", 0)
         profile.setdefault("total_attribute_budget_max", 4)
+        profile.setdefault("skills", default_profile["skills"])
+        profile.setdefault("total_skill_points", default_profile["total_skill_points"])
+        profile.setdefault(
+            "skill_level_descriptions",
+            default_profile["skill_level_descriptions"],
+        )
         profile.setdefault(
             "identity_guidelines",
             _normalize_string_list(normalized.get("recommended_roles", [])),
@@ -104,6 +163,10 @@ def _normalize_character_creation_profile(value: Any, normalized: dict[str, Any]
             "forbidden_character_elements",
             default_profile["forbidden_character_elements"],
         )
+        profile["skills"] = [
+            _normalize_skill_definition(item, index)
+            for index, item in enumerate(profile.get("skills") or default_profile["skills"])
+        ]
         return profile
 
     raw_attributes = (
@@ -136,12 +199,33 @@ def _normalize_character_creation_profile(value: Any, normalized: dict[str, Any]
             f"建议初始装备：{item}"
             for item in equipment_guidelines
         )
+    raw_skills = (
+        value.get("skills")
+        or value.get("技能")
+        or value.get("skill_list")
+        or value.get("车卡技能")
+        or default_profile["skills"]
+    )
+    skill_items = raw_skills if isinstance(raw_skills, list) else _normalize_string_list(raw_skills)
+    skill_points = _coerce_int(
+        value.get("total_skill_points")
+        or value.get("skill_points_total")
+        or value.get("总技能点")
+        or value.get("技能点总量"),
+        default_profile["total_skill_points"],
+    )
 
     return {
         "base_attributes": base_attributes,
         "world_specific_attributes": world_specific_attributes,
         "total_attribute_budget_min": 0,
         "total_attribute_budget_max": 4,
+        "skills": [
+            _normalize_skill_definition(item, index)
+            for index, item in enumerate(skill_items)
+        ],
+        "total_skill_points": max(0, skill_points),
+        "skill_level_descriptions": default_profile["skill_level_descriptions"],
         "identity_guidelines": identity_guidelines,
         "forbidden_character_elements": default_profile["forbidden_character_elements"],
     }
@@ -234,7 +318,7 @@ def normalize_world_payload(payload: dict[str, Any]) -> dict[str, Any]:
             for key, value in narration_style.items()
         }
 
-    normalized["character_creation_profile"] = _normalize_character_creation_profile(
+    normalized["character_creation_profile"] = normalize_character_creation_profile_payload(
         normalized.get("character_creation_profile"),
         normalized,
     )
@@ -376,11 +460,11 @@ def _normalize_attribute_value(value: Any) -> int:
 
 def _normalize_skill_value(value: Any) -> int:
     numeric = _coerce_int(value, 0)
-    if 0 <= numeric <= 3:
+    if 0 <= numeric <= 2:
         return numeric
     if 0 <= numeric <= 10:
-        return max(0, min(3, round(numeric / 3)))
-    return max(0, min(3, numeric))
+        return max(0, min(2, round(numeric / 5)))
+    return max(0, min(2, numeric))
 
 
 def _normalize_numeric_mapping(
@@ -389,13 +473,14 @@ def _normalize_numeric_mapping(
     aliases: dict[str, str],
     defaults: dict[str, int],
     value_normalizer: Callable[[Any], int] | None = None,
+    allow_new_keys: bool = False,
 ) -> dict[str, int]:
     normalized = dict(defaults)
     if isinstance(value, dict):
         for key, raw_value in value.items():
             mapped_key = aliases.get(str(key), str(key))
-            if mapped_key in normalized:
-                coerced = _coerce_int(raw_value, normalized[mapped_key])
+            if mapped_key in normalized or allow_new_keys:
+                coerced = _coerce_int(raw_value, normalized.get(mapped_key, 0))
                 normalized[mapped_key] = (
                     value_normalizer(coerced) if value_normalizer is not None else coerced
                 )
@@ -481,17 +566,9 @@ def normalize_character_payload(payload: dict[str, Any]) -> dict[str, Any]:
     normalized["skills"] = _normalize_numeric_mapping(
         normalized.get("skills"),
         aliases=skill_aliases,
-        defaults={
-            "investigation": 0,
-            "negotiation": 0,
-            "stealth": 0,
-            "combat": 0,
-            "medicine": 0,
-            "occult": 0,
-            "craft": 0,
-            "survival": 0,
-        },
+        defaults={},
         value_normalizer=_normalize_skill_value,
+        allow_new_keys=True,
     )
 
     relationships = normalized.get("relationships")

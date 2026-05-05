@@ -76,6 +76,55 @@ class CharacterWorldProfileValidator:
                 )
             )
 
+        skill_defs = {definition.key: definition for definition in profile.skills}
+        for key, value in character.skills.items():
+            if key not in skill_defs:
+                hard_errors.append(
+                    ErrorItem(
+                        code="unknown_world_skill",
+                        message=f"skill {key} is not allowed by the world creation profile",
+                        field_path=f"skills.{key}",
+                        severity="error",
+                        suggestion="remove the skill or add it to the world skill list",
+                    )
+                )
+                continue
+            if value < 0 or value > 2:
+                hard_errors.append(
+                    ErrorItem(
+                        code="skill_out_of_world_range",
+                        message=f"skill {key}={value} must be between 0 and 2",
+                        field_path=f"skills.{key}",
+                        severity="error",
+                        suggestion="set the skill to 0, 1 or 2",
+                    )
+                )
+
+        total_skill_points = sum(character.skills.values())
+        if total_skill_points > profile.total_skill_points:
+            hard_errors.append(
+                ErrorItem(
+                    code="skill_total_out_of_world_budget",
+                    message=(
+                        f"skill total {total_skill_points} exceeds world budget "
+                        f"{profile.total_skill_points}"
+                    ),
+                    field_path="skills",
+                    severity="error",
+                    suggestion="reduce skill points to fit the world creation budget",
+                )
+            )
+        if not character.skills or total_skill_points == 0:
+            warnings.append(
+                ErrorItem(
+                    code="no_skill_specialization",
+                    message="the character has no highlighted skills",
+                    field_path="skills",
+                    severity="warning",
+                    suggestion="give the character at least one visible area of expertise",
+                )
+            )
+
         searchable_text = "\n".join(
             [
                 character.identity,
@@ -124,6 +173,8 @@ class CharacterWorldProfileValidator:
             metrics={
                 "world_attribute_count": len(attribute_defs),
                 "character_attribute_total": total_attribute_points,
+                "world_skill_count": len(skill_defs),
+                "character_skill_total": total_skill_points,
                 "world_status_count": len(world.special_status_catalog),
             },
         )

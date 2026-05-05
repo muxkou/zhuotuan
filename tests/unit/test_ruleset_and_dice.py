@@ -53,6 +53,12 @@ def test_validate_skill_budget_detects_budget_overflow() -> None:
     assert errors[0].code == "skill_budget_exceeded"
 
 
+def test_validate_skill_budget_accepts_dynamic_skill_mapping() -> None:
+    errors = validate_skill_budget({"investigation": 2, "occult": 2, "survival": 2}, 5)
+    assert errors
+    assert errors[0].code == "skill_budget_exceeded"
+
+
 def test_roll_2d6_stays_in_expected_range() -> None:
     total, dice = roll_2d6(seed=42)
     assert len(dice) == 2

@@ -7,8 +7,10 @@
 4. 角色必须有明确的参团动机，并且动机要能支撑角色留在事件里。
 5. 角色不能拥有破坏世界观平衡的明确超能力。
 6. 属性必须遵守 world.character_creation_profile 中给定的属性集、取值范围和总预算，且不能出现负数。
-7. 技能不需要来自预定义列表，但整体分配要保持合理，避免明显超模。
-8. 至少给出：
+7. 技能必须来自 world.character_creation_profile.skills，不能自造未定义技能。
+8. 技能值只能是 0、1、2：0=不会，1=会，2=精通。
+9. 技能点总和不能超过 world.character_creation_profile.total_skill_points。
+10. 至少给出：
    - 2 个 personality_tags
    - 1 个 strengths
    - 1 个 weaknesses

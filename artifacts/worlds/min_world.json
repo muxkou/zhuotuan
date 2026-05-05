@@ -1,7 +1,7 @@
 {
   "id": "world_tanxi_records_v1",
   "version": "v1",
-  "created_at": "2026-05-04T17:12:33.432573Z",
+  "created_at": "2026-05-05T03:42:35.259638Z",
   "source": "system",
   "name": "檀溪异闻录",
   "tagline": "一个被水雾、旧宅、宗族和失踪传闻笼罩的江南古镇世界。",
@@ -220,6 +220,54 @@
     "world_specific_attributes": [],
     "total_attribute_budget_min": 0,
     "total_attribute_budget_max": 4,
+    "skills": [
+      {
+        "key": "investigation",
+        "label": "调查",
+        "description": "搜索线索、询问细节、辨认矛盾和追踪事实。"
+      },
+      {
+        "key": "negotiation",
+        "label": "交涉",
+        "description": "说服、安抚、威慑、套话或处理人际冲突。"
+      },
+      {
+        "key": "stealth",
+        "label": "潜行",
+        "description": "隐藏行踪、避开注意、悄悄接近或脱离危险。"
+      },
+      {
+        "key": "combat",
+        "label": "战斗",
+        "description": "近身对抗、保护同伴、解除普通武力威胁。"
+      },
+      {
+        "key": "medicine",
+        "label": "医治",
+        "description": "急救、判断伤势、处理药物或生理异常。"
+      },
+      {
+        "key": "occult",
+        "label": "民俗",
+        "description": "识别民俗禁忌、仪式痕迹、怪谈传承和异常象征。"
+      },
+      {
+        "key": "craft",
+        "label": "技艺",
+        "description": "修理、制作、开锁、使用工具或处理机关。"
+      },
+      {
+        "key": "survival",
+        "label": "生存",
+        "description": "野外行动、辨认环境风险、寻找路径和应急资源。"
+      }
+    ],
+    "total_skill_points": 6,
+    "skill_level_descriptions": {
+      "0": "不会：没有稳定训练或经验，通常只能尝试非常基础的行动。",
+      "1": "会：具备基础训练或经验，可以完成常规难度行动。",
+      "2": "精通：在该技能上有明显优势，可承担关键行动。"
+    },
     "identity_guidelines": [
       "优先选择能自然卷入调查、求助、护送、追凶、守秘的普通人身份。",
       "角色应保留缺点和代价，不建议直接写成全能英雄或超能力者。"

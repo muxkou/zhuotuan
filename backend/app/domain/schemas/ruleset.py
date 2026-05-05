@@ -77,8 +77,12 @@ def validate_attributes(
     return errors
 
 
-def validate_skill_budget(skills: SkillBonus, budget_max: int = 6) -> list[ErrorItem]:
-    total = sum(skills.model_dump().values())
+def validate_skill_budget(
+    skills: SkillBonus | dict[str, int],
+    budget_max: int = 6,
+) -> list[ErrorItem]:
+    dumped_skills = skills.model_dump() if isinstance(skills, SkillBonus) else skills
+    total = sum(dumped_skills.values())
     errors: list[ErrorItem] = []
     if total > budget_max:
         errors.append(

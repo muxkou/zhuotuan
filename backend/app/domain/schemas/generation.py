@@ -5,7 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from backend.app.domain.schemas.character import CharacterSheetSchema
 from backend.app.domain.schemas.common import ValidationReport
 from backend.app.domain.schemas.module import ModuleBlueprintSchema
-from backend.app.domain.schemas.world import WorldSchema
+from backend.app.domain.schemas.world import CharacterCreationProfile, WorldSchema
 
 
 class QuickStartInput(BaseModel):
@@ -33,6 +33,15 @@ class WorldGenerationOutput(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     world: WorldSchema
+    raw_text: str | None = Field(default=None, description="模型原始输出，便于调试。")
+
+
+class CharacterCreationProfileGenerationOutput(BaseModel):
+    """世界车卡规则生成服务的输出包装。"""
+
+    model_config = ConfigDict(extra="forbid")
+
+    profile: CharacterCreationProfile
     raw_text: str | None = Field(default=None, description="模型原始输出，便于调试。")
 
 
