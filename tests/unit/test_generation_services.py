@@ -12,6 +12,8 @@ class FakeLLMClient:
 
     async def generate_json_dict(self, **kwargs):
         output = self.outputs.pop(0)
+        if isinstance(output, dict):
+            return output, '{"mocked": true}'
         return output.model_dump(mode="json"), '{"mocked": true}'
 
 
@@ -101,6 +103,15 @@ async def test_module_generation_service_returns_valid_output() -> None:
     assert result.module.threat_clock_id.startswith("clock_")
     assert all(clue.clue_id.startswith("clue_") for clue in result.module.key_clues)
     assert result.module.source == "llm"
+
+
+async def test_module_generation_service_normalizes_float_ai_freedom_level() -> None:
+    world = make_world()
+    module = make_module().model_dump(mode="json")
+    module["ai_freedom_level"] = 0.2
+    service = ModuleGenerationService(llm_client=FakeLLMClient([module]))
+    result = await service.generate(make_quick_start(), world)
+    assert result.module.ai_freedom_level == "conservative"
 
 
 async def test_module_generation_pipeline_repairs_warn_module() -> None:

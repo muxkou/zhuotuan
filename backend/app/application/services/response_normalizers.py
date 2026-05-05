@@ -262,7 +262,14 @@ def normalize_module_payload(payload: dict[str, Any]) -> dict[str, Any]:
         "default": "standard",
         "flexible": "high",
     }
-    if isinstance(freedom_level, int):
+    if isinstance(freedom_level, float):
+        if freedom_level < 0.34:
+            normalized["ai_freedom_level"] = "conservative"
+        elif freedom_level <= 0.66:
+            normalized["ai_freedom_level"] = "standard"
+        else:
+            normalized["ai_freedom_level"] = "high"
+    elif isinstance(freedom_level, int):
         numeric_mapping = {
             1: "conservative",
             2: "standard",
